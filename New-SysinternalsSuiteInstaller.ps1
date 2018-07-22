@@ -31,15 +31,14 @@
 # // Purpose:   PowerShell Script to generate an INF file that installs the 
 # //            Sysinternals Suite.
 # //
-# // Version:   1.0.1
+$scriptVersion = "1.1.0"
 # //
 # // Revisions:
 # // ----------
 # // 1.0.0   10/27/2010   Created script.
 # // 1.0.1   06/20/2012   Patched script to work with current webpage
+# // 1.1.0   07/22/2018.  Forked by John Pell: use HTTPS, use PS3.0 feautres
 # //***************************************************************************
-
-$scriptVersion = "1.0.1"
 
 
 function Extract-Zip
@@ -55,12 +54,11 @@ function Extract-Zip
 	}
 }
 
+#Requires -Version 3.0
+$scriptPath = $PSScriptRoot
 
-$invocation = (Get-Variable MyInvocation -Scope 0).Value
-$scriptPath = Split-Path $Invocation.MyCommand.Path
-
-$uriZipFile = "http://download.sysinternals.com/files/SysinternalsSuite.zip"
-$uriWebPage = "http://technet.microsoft.com/en-us/sysinternals/bb842062.aspx"
+$uriZipFile = "https://download.sysinternals.com/files/SysinternalsSuite.zip"
+$uriWebPage = "https://technet.microsoft.com/en-us/sysinternals/bb842062.aspx"
 $regexPattern = "<p>Updated: (.+?)<\/p>"
 $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)"
 
@@ -137,8 +135,8 @@ Install_SysinternalsSuite.inf=55
 
 [DestinationDirs]
 SysinternalsSuite.Files.Inf = 17
-SysinternalsSuite.Files.ProgramFiles = 16422,Sysinternals Suite
-SysinternalsSuite.Files.ProgramFiles.ShellRunas = 16422,Sysinternals Suite
+SysinternalsSuite.Files.ProgramFiles = 50
+SysinternalsSuite.Files.ProgramFiles.ShellRunas = 50
 
 [SysinternalsSuite.Files.Inf]
 Install_SysinternalsSuite.inf
@@ -159,7 +157,7 @@ HKLM,%UDHERE%
 
 [SysinternalsSuite.Links]
 setup.ini, progman.groups,,""group1="%16407%\%SysinternalsSuiteGroup%\"""
-setup.ini, group1,,"""%SysinternalsSuiteCmdPrompt%"",""""""%11%\cmd.exe"""" /k cd /d """"%16422%\%SysinternalsSuiteGroup%"""""",,,,""%16422%\%SysinternalsSuiteGroup%"",""%SysinternalsSuiteCmdPrompt%"""
+setup.ini, group1,,"""%SysinternalsSuiteCmdPrompt%"",""""""%11%\cmd.exe"""" /k cd /d """"%50%\%SysinternalsSuiteGroup%"""""",,,,""%50%\%SysinternalsSuiteGroup%"",""%SysinternalsSuiteCmdPrompt%"""
 setup.ini, group1,,"""%SysinternalsSuiteURL%"",""""""%16422%\Internet Explorer\iexplore.exe"""" """"http://www.microsoft.com/technet/sysinternals/utilities/sysinternalssuite.mspx"""""",""%16422%\Internet Explorer\iexplore.exe"",1,,""%HOMEDRIVE%%HOMEPATH%"",""%SysinternalsSuiteURL%"""
 <AddProgramShortcuts>
 
@@ -299,7 +297,7 @@ foreach ($programName in $hashStartMenuPrograms.Keys)
         [string]$fileExt = (Get-Item "$($extractFolder)\$($programName)").extension
         [string]$fileBaseName = $programName -replace($fileExt ,"")
 
-        $AddLine = 'setup.ini, group1,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%16422%\%SysinternalsSuiteGroup%\' + $programName + '"""""",,,,""""%16422%\%SysinternalsSuiteGroup%"""",""' + "%$($fileBaseName)Desc%" + '"""'
+        $AddLine = 'setup.ini, group1,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%50%\%SysinternalsSuiteGroup%\' + $programName + '"""""",,,,""""%50%\%SysinternalsSuiteGroup%"""",""' + "%$($fileBaseName)Desc%" + '"""'
         $AddProgramShortcuts = $AddProgramShortcuts + $AddLine + "`n"
 
         $RemoveLine = 'setup.ini, group1,,"""' + "%$($fileBaseName)Desc%" + '""'
@@ -330,7 +328,7 @@ foreach ($helpName in $hashStartMenuHelp.Keys)
         [string]$fileBaseName = $helpName -replace($fileExt ,"")
         #$fileBaseName
 
-        $AddLine = 'setup.ini, group2,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%16422%\%SysinternalsSuiteGroup%\' + $helpName + '"""""""'
+        $AddLine = 'setup.ini, group2,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%50%\%SysinternalsSuiteGroup%\' + $helpName + '"""""""'
         $AddHelpShortcuts = $AddHelpShortcuts + $AddLine + "`n"
 
         $RemoveLine = 'setup.ini, group2,,"""' + "%$($fileBaseName)Desc%" + '""'
