@@ -9,4 +9,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Default|AnyCPU' ">
     <OutputPath>.\</OutputPath>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="Configure-NewHyperVHost.ps1" />
+    <None Include="Install-LogMeIn4Mayflower.ps1" />
+    <None Include="MayflowerScripts.sln" />
+    <None Include="MayflowerSync.json" />
+    <None Include="copy-AzureRMManagedDiskToSubscription.ps1" />
+    <None Include="Install-MayflowerResilio.ps1" />
+    <None Include="MayflowerScripts.mdproj" />
+    <None Include="New-SysinternalsSuiteInstaller.ps1" />
+  </ItemGroup>
 </Project>
