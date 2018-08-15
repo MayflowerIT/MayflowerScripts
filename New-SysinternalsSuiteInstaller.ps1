@@ -55,11 +55,11 @@ function Extract-Zip
 }
 
 #Requires -Version 3.0
-$scriptPath = $PSScriptRoot
+$scriptPath = $pwd # $PSScriptRoot
 
 $uriZipFile = "https://download.sysinternals.com/files/SysinternalsSuite.zip"
 $uriWebPage = "https://technet.microsoft.com/en-us/sysinternals/bb842062.aspx"
-$regexPattern = "<p>Updated: (.+?)<\/p>"
+$regexPattern = "<br>Updated: (.*?)<br>"
 $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)"
 
 
@@ -157,7 +157,7 @@ HKLM,%UDHERE%
 
 [SysinternalsSuite.Links]
 setup.ini, progman.groups,,""group1="%16407%\%SysinternalsSuiteGroup%\"""
-setup.ini, group1,,"""%SysinternalsSuiteCmdPrompt%"",""""""%11%\cmd.exe"""" /k cd /d """"%50%\%SysinternalsSuiteGroup%"""""",,,,""%50%\%SysinternalsSuiteGroup%"",""%SysinternalsSuiteCmdPrompt%"""
+setup.ini, group1,,"""%SysinternalsSuiteCmdPrompt%"",""""""%11%\cmd.exe"""" /k cd /d """"%50%"""""",,,,""%50%"",""%SysinternalsSuiteCmdPrompt%"""
 setup.ini, group1,,"""%SysinternalsSuiteURL%"",""""""%16422%\Internet Explorer\iexplore.exe"""" """"http://www.microsoft.com/technet/sysinternals/utilities/sysinternalssuite.mspx"""""",""%16422%\Internet Explorer\iexplore.exe"",1,,""%HOMEDRIVE%%HOMEPATH%"",""%SysinternalsSuiteURL%"""
 <AddProgramShortcuts>
 
@@ -297,7 +297,7 @@ foreach ($programName in $hashStartMenuPrograms.Keys)
         [string]$fileExt = (Get-Item "$($extractFolder)\$($programName)").extension
         [string]$fileBaseName = $programName -replace($fileExt ,"")
 
-        $AddLine = 'setup.ini, group1,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%50%\%SysinternalsSuiteGroup%\' + $programName + '"""""",,,,""""%50%\%SysinternalsSuiteGroup%"""",""' + "%$($fileBaseName)Desc%" + '"""'
+        $AddLine = 'setup.ini, group1,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%50%\' + $programName + '"""""",,,,""""%50%"""",""' + "%$($fileBaseName)Desc%" + '"""'
         $AddProgramShortcuts = $AddProgramShortcuts + $AddLine + "`n"
 
         $RemoveLine = 'setup.ini, group1,,"""' + "%$($fileBaseName)Desc%" + '""'
@@ -328,7 +328,7 @@ foreach ($helpName in $hashStartMenuHelp.Keys)
         [string]$fileBaseName = $helpName -replace($fileExt ,"")
         #$fileBaseName
 
-        $AddLine = 'setup.ini, group2,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%50%\%SysinternalsSuiteGroup%\' + $helpName + '"""""""'
+        $AddLine = 'setup.ini, group2,,"""' + "%$($fileBaseName)Desc%" + '"",""""""%50%\' + $helpName + '"""""""'
         $AddHelpShortcuts = $AddHelpShortcuts + $AddLine + "`n"
 
         $RemoveLine = 'setup.ini, group2,,"""' + "%$($fileBaseName)Desc%" + '""'
