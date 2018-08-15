@@ -3,7 +3,7 @@
 	"listening_port" : 0, /* 0 - randomize port */
 
 /* storage_path dir contains auxilliary app files if no storage_path field: .sync dir created in current working directory */
-	"storage_path" : "C:\\ProgramData\\MayflowerSync",
+	"storage_path" : "SYNC_STORAGE_PATH",
 
 /* set location of pid file */
 //	"pid_file" : "/var/run/rslsync/rslsync.pid",
@@ -16,7 +16,7 @@
 	"upload_limit" : 0,
 
 /* directory_root path defines where the WebUI Folder browser starts (linux only). Default value is / */
-//	"directory_root" : "C:\\Sync",
+	"directory_root" : "SYNC_DIRECTORY_ROOT",
 
 /* directory_root_policy defines how directory_root is used (linux only).
    Valid values are:
@@ -24,46 +24,60 @@
      "belowroot" - accepts directory_root's subdirectories for 'getdir' and 'adddir' actions,
       but denies attempts to use 'adddir' to create directories directly within directory_root
    Default value is "all". */
-//	"directory_root_policy" : "all",
+	"directory_root_policy" : "all",
 
 	"webui" :
 	{
-		"listen" : "127.0.0.1:9999" // remove field to disable WebUI
+    "listen": "127.0.0.1:9999" // remove field to disable WebUI
 
-/* preset credentials. Use password or password_hash */
-//		,"login" : "Mayflower"
-//		,"password" : "May9B0xx"
-//		,"password_hash" : "some_hash" // password hash in crypt(3) format
-		,"allow_empty_password" : false // Defaults to true
-/* ssl configuration */
-//		,"force_https" : true // disable http
-//		,"ssl_certificate" : "/path/to/cert.pem"
-//		,"ssl_private_key" : "/path/to/private.key"
+    /* preset credentials. Use password or password_hash */
+    //		,"login" : "Mayflower"
+    //		,"password" : "May9B0xx"
+    //		,"password_hash" : "some_hash" // password hash in crypt(3) format
+    ,
+    "allow_empty_password": false // Defaults to true
+    /* ssl configuration */
+    ,
+    "force_https": true // disable http
+    ,
+    "ssl_certificate": "SYNC_STORAGE_PATH/cert.pem",
+    "ssl_private_key": "SYNC_STORAGE_PATH/private.key"
 
-/* dir_whitelist defines which directories can be shown to user or have folders added (linux only)
+    /* dir_whitelist defines which directories can be shown to user or have folders added (linux only)
    relative paths are relative to directory_root setting */
-//		,"dir_whitelist" : [ "/home/user/MySharedFolders/personal", "work" ]
+    //		,"dir_whitelist" : [ "/home/user/MySharedFolders/personal", "work" ]
 	}
 
 /* !!! if you set shared folders in config file WebUI will be DISABLED !!!
    shared directories specified in config file  override the folders previously added from WebUI. */
-/*,"shared_folders" :
+,"shared_folders" :
 	[
-	{
-		"secret" : "MY_SECRET_1", // required field - use --generate-secret in command line to create new secret
-		"dir" : "C:\\Sync\\NETLOGON", // * required field
-		"use_relay_server" : true, //  use relay server when direct connection fails
-		"use_tracker" : true,
-		"search_lan" : true,
-		"use_sync_trash" : true, // enable SyncArchive to store files deleted on remote devices
-		"overwrite_changes" : false, // restore modified files to original version, ONLY for Read-Only folders
-		"selective_sync" : false, // add folder in selective sync mode
-		"known_hosts" : // specify hosts to attempt connection without additional search
+    {
+      "secret": "SYNC_NETLOGON_READ_ONLY", // required field - use --generate-secret in command line to create new secret
+      "dir": "SYNC_NETLOGON_PATH", // * required field
+      "use_relay_server": true, //  use relay server when direct connection fails
+      "use_tracker": true,
+      "search_lan": true,
+      "use_sync_trash": true, // enable SyncArchive to store files deleted on remote devices
+      "overwrite_changes": true, // restore modified files to original version, ONLY for Read-Only folders
+      "selective_sync": false // add folder in selective sync mode
+      /*"known_hosts" : // specify hosts to attempt connection without additional search
 		[
 			"192.168.1.2:44444"
 		]
-	}
-	]
+    /**/
+    }
+   ,{
+      "secret": "SYNC_BASELINE_READ_ONLY", // required field - use --generate-secret in command line to create new secret
+      "dir": "SYNC_BASELINE_PATH", // * required field
+      "use_relay_server": true, //  use relay server when direct connection fails
+      "use_tracker": true,
+      "search_lan": true,
+      "use_sync_trash": true, // enable SyncArchive to store files deleted on remote devices
+      "overwrite_changes": true, // restore modified files to original version, ONLY for Read-Only folders
+      "selective_sync": false // add folder in selective sync mode
+    }
+  ]
 /**/
 
 /* Advanced preferences can be added to config file. Info is available at "http://help.getsync.com/customer/portal/articles/1902048-sync-advanced-preferences--more-options"
