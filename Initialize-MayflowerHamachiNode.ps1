@@ -1,29 +1,38 @@
-﻿# tst
+﻿<# Init Mayflower Hamachi #>
 
-$SvcNameFull= "Mayflower Sync"
+#Requires -RunAsAdministrator
 
-$svcnameshort= $SvcNameFull -replace ' ',''
-$svcname = $SvcNameShort -replace '[aeiou]',''
-$syncbinpath = "System\${svcnameshort}_x64.exe"
-$storageRoot = "$env:SystemDrive\Sync"
-$storagePath = "$env:ProgramData\${svcnameshort}"
-
-$resiliourl = "https://download-cdn.resilio.com/stable/windows64/Resilio-Sync_x64.exe"
-
-Start-Service BITS
-Import-Module BitsTransfer
-
-Start-BitsTransfer -Source $resiliourl -Destination "$env:SystemRoot\$syncbinpath" -TransferType Download
-
-New-Service -Name $svcname -BinaryPathName "`"%SystemRoot%\$syncbinpath`" /SVC -n $($svcname) /storage `"%ProgramData%\${svcnameshort}`" /config `"%ProgramData%\${svcnameshort}\${svcnameshort}.json`"" -DisplayName "${svcnamefull}" -StartupType Automatic -ErrorAction SilentlyContinue
-$service = gwmi win32_service -filter "name='$($svcname)'"
-$service.change($null,$null,$null,$null,$null,$null,"NT Service\$($svcname)",$null)
+$hamachiURI = "HTTPS://Secure.LogMeIn.com/Hamachi.msi"
+$hamachiMSI = "$temp\Hamachi.msi"
+$hamachiNET = "o5edsqqak5ddpmjvcev2xnetvl007pbm83kb7397"
 
 
-md $storageRoot -ErrorAction SilentlyContinue
-icacls $storageRoot /setowner "NT Service\$svcname"
-icacls $storageRoot /grant "NT Service\${svcname}:(OI)(CI)(F)"
-md $storagePath -ErrorAction SilentlyContinue
-icacls $storagePath /setowner "NT Service\$svcname"
-icacls $storagePath /grant "NT Service\${svcname}:(OI)(CI)(F)"
-(Get-Content $PSScriptRoot\${svcnameshort}.json).replace('SYNC_DEVICE_NAME', "$env:ComputerName") | Set-Content $env:ProgramData\${svcnameshort}\${svcnameshort}.json
+[ValidatePattern("\w+")]$newComputerName = Read-Host -prompt "Enter this computer's new name" -ErrorAction STOP
+
+
+Invoke-WebRequest -Uri $hamachiURI -OutFile $hamachiMSI
+Start-Process -wait -NoNewWindow MSIEXEC -ArgumentList "/i","`"$hamachiMSI`"","/qn","DEPLOYID=$hamachiNET","XXX_DESCRIPTION=$newComputerName" -ErrorAction STOP
+
+
+Write-Host "This device has been joined to Mayflower's Hamachi network. `
+            Make sure to assign this device to the apprirate subnets before continuing."
+Write-Host -NoNewLine 'Press any key to continue...';
+$null = $Host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown');
+
+Add-DnsClientNrptRule -Namespace  "Mayflower.IT" -NameServers "25.19.19.115","25.17.102.96" 
+Add-DnsClientNrptRule -Namespace ".Mayflower.IT" -NameServers "25.19.19.115","25.17.102.96" 
+
+
+
+do {
+  Write-Host "Waiting for IT reachability..."
+  sleep 1
+} until(Test-NetConnection "Mayflower.IT" -Port 53 | ? { $_.TcpTestSucceeded } )
+
+
+Add-Computer -DomainName "Mayflower.IT" -Credential (Get-Credential) -NewName $newComputerName
+
+Start-Process -Wait -NoNewWindow "GPUPDATE" 
+
+Restart-Computer
+
