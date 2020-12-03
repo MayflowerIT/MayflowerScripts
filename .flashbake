@@ -17,8 +17,10 @@ MayflowerScripts.mdproj
 ##
 DSCresources/*/*.psd1
 DSCresources/*/*.schema.psm1
+DSCresources/*/*.schema.mof
 */DSCresources/*/*.psd1
 */DSCresources/*/*.schema.psm1
+*/DSCresources/*/*.schema.mof
 
 ##
 # Include PowerShell scripts.
