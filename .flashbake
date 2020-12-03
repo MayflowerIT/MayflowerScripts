@@ -1,7 +1,9 @@
 ##
-# Mayflower Scripts PowerShell module itself
+# Mayflower Scripts PowerShell module itself.
 ##
 MayflowerScripts.psd1
+MayflowerScripts.sln
+MayflowerScripts.mdproj
 
 ##
 # Include PowerShell modules.
