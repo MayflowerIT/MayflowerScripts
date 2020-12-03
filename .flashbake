@@ -1,0 +1,21 @@
+##
+# Mayflower Scripts PowerShell module itself
+##
+MayflowerScripts.psd1
+
+##
+# Include PowerShell modules.
+##
+*/*.psd1
+*/*.psm1
+# .ps1 files inside modules will need to be added manually
+*/DSCresources/*/*.psd1
+*/DSCresources/*/*.schema.psm1
+
+##
+# Include PowerShell scripts.
+##
+*.ps1
+
+
+#TODO: some way to parse the .psd1 and include all files listed?
