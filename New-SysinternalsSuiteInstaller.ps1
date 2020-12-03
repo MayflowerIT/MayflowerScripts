@@ -16,7 +16,7 @@
 #   (ii)     to include a valid copyright notice on Your software product in which 
 #            the Sample Code is embedded; and 
 #   (iii)    to indemnify, hold harmless, and defend Us and Our suppliers from and 
-#            against any claims or lawsuits, including attorneys’ fees, that arise 
+#            against any claims or lawsuits, including attorneys' fees, that arise 
 #            or result from the use or distribution of the Sample Code.
 #########################################################################################
 # //***************************************************************************
@@ -36,8 +36,8 @@ $scriptVersion = "1.1.0"
 # // Revisions:
 # // ----------
 # // 1.0.0   10/27/2010   Created script.
-# // 1.0.1   06/20/2012   Patched script to work with current webpage
-# // 1.1.0   07/22/2018.  Forked by John Pell: use HTTPS, use PS3.0 feautres
+# // 1.0.1   06/20/2012   Patched script to work with current webpage.
+# // 1.1.0   07/22/2018   Forked by John Pell: use HTTPS, use PS3.0 feautres.
 # //***************************************************************************
 
 
@@ -59,7 +59,8 @@ $scriptPath = $pwd # $PSScriptRoot
 
 $uriZipFile = "https://download.sysinternals.com/files/SysinternalsSuite.zip"
 $uriWebPage = "https://technet.microsoft.com/en-us/sysinternals/bb842062.aspx"
-$regexPattern = "<br>Updated: (.*?)<br>"
+#$uriWebPage = "https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite"
+$regexPattern = "\w*?Updated: (.*?)<br>"
 $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)"
 
 
@@ -83,7 +84,7 @@ $infContent = @'
 ; #   (ii)     to include a valid copyright notice on Your software product in which 
 ; #            the Sample Code is embedded; and 
 ; #   (iii)    to indemnify, hold harmless, and defend Us and Our suppliers from and 
-; #            against any claims or lawsuits, including attorneys’ fees, that arise 
+; #            against any claims or lawsuits, including attorneys' fees, that arise 
 ; #            or result from the use or distribution of the Sample Code.
 ; #########################################################################################
 ; //***************************************************************************
