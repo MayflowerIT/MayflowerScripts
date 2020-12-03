@@ -11,6 +11,12 @@ MayflowerScripts.mdproj
 */*.psd1
 */*.psm1
 # .ps1 files inside modules will need to be added manually
+
+##
+# Include DSC resources in this module and submodules.
+##
+DSCresources/*/*.psd1
+DSCresources/*/*.schema.psm1
 */DSCresources/*/*.psd1
 */DSCresources/*/*.schema.psm1
 
