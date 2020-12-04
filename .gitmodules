@@ -1,0 +1,3 @@
+[submodule "MayflowerSync"]
+	path = MayflowerSync
+	url = git@github.com:MayflowerIT/MayflowerSync.git
