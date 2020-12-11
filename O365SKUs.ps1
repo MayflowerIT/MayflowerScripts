@@ -1,5 +1,12 @@
 ﻿# see https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
 
+Get-AzureADSubscribedSku -Verbose |select SkuID,SKUPartNumber,ServicePlans
+
+#New-ADGroup -GroupCategory Security -GroupScope DomainLocal `
+#-Path "C=Microsoft 365,C=Roles,OU=TOWER,DC=TowerImaging,DC=net" `
+#-OtherAttributes @{'ms-DS-ConsistencyGuid'=[guid]'c1ec4a95-1f05-45b3-a911-aa3fa01094f5'} `
+#-SamAccountName INTUNE_A -Name "Intune" -DisplayName "Microsoft Intune" -Description "Members are assigned Intune licenses."
+
 $O365SKUs = @{
 
 	SPZA_IW = @{
