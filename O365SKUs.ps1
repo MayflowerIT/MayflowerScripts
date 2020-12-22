@@ -1,11 +1,5 @@
 ﻿# see https://docs.microsoft.com/en-us/azure/active-directory/users-groups-roles/licensing-service-plan-reference
 
-Get-AzureADSubscribedSku -Verbose |select SkuID,SKUPartNumber,ServicePlans
-
-#New-ADGroup -GroupCategory Security -GroupScope DomainLocal `
-#-Path "C=Microsoft 365,C=Roles,OU=TOWER,DC=TowerImaging,DC=net" `
-#-OtherAttributes @{'ms-DS-ConsistencyGuid'=[guid]'c1ec4a95-1f05-45b3-a911-aa3fa01094f5'} `
-#-SamAccountName INTUNE_A -Name "Intune" -DisplayName "Microsoft Intune" -Description "Members are assigned Intune licenses."
 
 $O365SKUs = @{
 
@@ -70,7 +64,7 @@ $O365SKUs = @{
 			"PROJECT_CLIENT_SUBSCRIPTION",
 			"SHAREPOINT_PROJECT",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		);
 	};
 
@@ -84,7 +78,7 @@ $O365SKUs = @{
 			"POWERAPPS_DYN_APPS",
 			"PROJECT_ESSENTIALS",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		);
 	};
 
@@ -94,7 +88,7 @@ $O365SKUs = @{
 		ServicePlans = @(
 			"DYN365_FINANCIALS_BUSINESS",
 			"FLOW_DYN_APPS",
-			"POWERAPPS_DYN_APPS",
+			"POWERAPPS_DYN_APPS"
 		);
 	};
 
@@ -108,7 +102,7 @@ $O365SKUs = @{
 			"POWERAPPS_DYN_APPS",
 			"PROJECT_ESSENTIALS",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		);
 	};
 
@@ -122,7 +116,7 @@ $O365SKUs = @{
 			"POWERAPPS_DYN_APPS",
 			"PROJECT_ESSENTIALS",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		);
 	};
 
@@ -140,7 +134,7 @@ $O365SKUs = @{
 			"POWERAPPS_DYN_TEAM",
 			"PROJECT_ESSENTIALS",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		);
 	};
 
@@ -155,7 +149,7 @@ $O365SKUs = @{
 			"Dynamics_365_Hiring_Free_PLAN",
 			"Dynamics_365_Onboarding_Free_PLAN",
 			"FLOW_DYN_P2",
-			"POWERAPPS_DYN_P2",
+			"POWERAPPS_DYN_P2"
 		);
 	};
 
@@ -438,7 +432,7 @@ $O365SKUs = @{
 			"SWAY",
 			"TEAMS1",
 			"WIN10_PRO_ENT_SUB",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		)
 	};
 
@@ -490,7 +484,7 @@ $O365SKUs = @{
 			"BPOS_S_TODO_3",
 			"WHITEBOARD_PLAN3",
 			"WIN10_PRO_ENT_SUB",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		);
 	};
 
@@ -500,7 +494,7 @@ $O365SKUs = @{
 		ServicePlans = @(
 			"AAD_PREMIUM",
 			"RMS_S_PREMIUM",
-			"RMS_S_ENTERPRISE_GOV" (6a76346d-5d6e-4051-9fe3-ed3f312b5597)
+			"RMS_S_ENTERPRISE_GOV",
 			"ADALLOM_S_DISCOVERY",
 			"EXCHANGE_S_FOUNDATION",
 			"MFA_PREMIUM",
@@ -511,7 +505,7 @@ $O365SKUs = @{
 			"INTUNE_O365",
 			"SHAREPOINTDESKLESS",
 			"MCOIMP",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		)
 	}
 
@@ -544,7 +538,7 @@ $O365SKUs = @{
 		"BPOS_S_TODO_FIRSTLINE",
 		"WHITEBOARD_FIRSTLINE1",
 		"WIN10_ENT_LOC_F1",
-		"YAMMER_ENTERPRISE",
+		"YAMMER_ENTERPRISE"
 		)
 	}
 
@@ -552,7 +546,7 @@ $O365SKUs = @{
 		DisplayName = "Power Automate Free";
 		GUID = [guid]"f30db892-07e9-47e9-837c-80727f46fd3d";
 		ServicePlans = @(
-			"DYN365_CDS_VIRAL";
+			"DYN365_CDS_VIRAL"
 		);
 	};
 
@@ -560,7 +554,7 @@ $O365SKUs = @{
 		DisplayName = "Microsoft 365 Phone System";
 		GUID = [guid]"e43b5b99-8dfb-405f-9987-dc307f34bcbd";
 		ServicePlans = @(
-			"MCOEV";
+			"MCOEV"
 		);
 	}; # formerly "Cloud PBX"
 
@@ -568,7 +562,7 @@ $O365SKUs = @{
 		DisplayName = "Microsoft 365 Phone System for Small and Medium Business";
 		GUID = [guid]"aa6791d3-bb09-4bc2-afed-c30c3fe26032";
 		ServicePlans = @(
-			"MCOEVSMB",
+			"MCOEVSMB"
 		)
 	}
 
@@ -577,7 +571,7 @@ $O365SKUs = @{
 		GUID = [guid]"111046dd-295b-4d6d-9724-d52ac90bd1f2";
 		ServicePlans = @(
 			"EXCHANGE_S_FOUNDATION",
-			"WINDEFATP",
+			"WINDEFATP"
 		)
 	}
 
@@ -585,9 +579,9 @@ $O365SKUs = @{
 		DisplayName = "Microsoft DYNAMICS CRM ONLINE BASIC";
 		GUID = [guid]"906af65a-2970-46d5-9b58-4e9aa50f0657"
 		ServicePlans = @(
-			"CRMPLAN2" (bf36ca64-95c6-4918-9275-eb9f4ce2c04f)
+			"CRMPLAN2",
 			"FLOW_DYN_APPS",
-			"POWERAPPS_DYN_APPS",
+			"POWERAPPS_DYN_APPS"
 		)
 	}
 
@@ -599,7 +593,7 @@ $O365SKUs = @{
 			"FLOW_DYN_APPS",
 			"MDM_SALES_COLLABORATION",
 			"NBPROFESSIONALFORCRM",
-			"POWERAPPS_DYN_APPS",
+			"POWERAPPS_DYN_APPS"
 		)
 	}
 
@@ -620,7 +614,7 @@ $O365SKUs = @{
 			"TEAMS_FREE",
 			"SHAREPOINTDESKLESS", 
 			"TEAMS_FREE_SERVICE",
-			"WHITEBOARD_FIRSTLINE1",
+			"WHITEBOARD_FIRSTLINE1"
 		)
 	}
 
@@ -630,10 +624,10 @@ $O365SKUs = @{
 		ServicePlans = @(
 			"LOCKBOX_ENTERPRISE",
 			"INFORMATION_BARRIERS",
-			"MIP_S_CLP2" (efb0351d-3b08-4503-993d-383af8de41e3)
+			"MIP_S_CLP2",
 			"EQUIVIO_ANALYTICS",
 			"PAM_ENTERPRISE",
-			"PREMIUM_ENCRYPTION",
+			"PREMIUM_ENCRYPTION"
 		)
 	}
 
@@ -641,7 +635,7 @@ $O365SKUs = @{
 		DisplayName = "Office 365 Advanced Threat Protection (Plan 1)";
 		GUID = [guid]"4ef96642-f096-40de-a3e9-d83fb2f90211";
 		ServicePlans = @(
-			"ATP_ENTERPRISE",
+			"ATP_ENTERPRISE"
 		)
 	}
 
@@ -649,7 +643,7 @@ $O365SKUs = @{
 		DisplayName = "Office 365 E1";
 		GUID = [guid]"18181a46-0d4e-45cd-891e-60aabd171b4e";
 		ServicePlans = @(
-			"BPOS_S_TODO_1" (5e62787c-c316-451f-b873-1d05acd4d12c)
+			"BPOS_S_TODO_1",
 			"Deskless",
 			"EXCHANGE_S_STANDARD",
 			"FLOW_O365_P1",
@@ -663,7 +657,7 @@ $O365SKUs = @{
 			"STREAM_O365_E1",
 			"SWAY",
 			"TEAMS1",
-			"YAMMER_ENTERPRISE",)
+			"YAMMER_ENTERPRISE"
 		);
 	};
 
@@ -671,7 +665,7 @@ $O365SKUs = @{
 		DisplayName = "Office 365 E2";
 		GUID = [guid]"6634e0ce-1a9f-428c-a498-f84ec7b8aa2e";
 		ServicePlans = @(
-			"BPOS_S_TODO_1"(5e62787c-c316-451f-b873-1d05acd4d12c)
+			"BPOS_S_TODO_1",
 			"Deskless",
 			"EXCHANGE_S_STANDARD",
 			"FLOW_O365_P1",
@@ -684,9 +678,9 @@ $O365SKUs = @{
 			"STREAM_O365_E1",
 			"SWAY",
 			"TEAMS1",
-			"YAMMER_ENTERPRISE",
-		)
-	}
+			"YAMMER_ENTERPRISE"
+		);
+	};
 
 	ENTERPRISEPACK = @{
 		DisplayName = "Office 365 E3";
@@ -707,7 +701,7 @@ $O365SKUs = @{
 			"STREAM_O365_E3",
 			"SWAY",
 			"TEAMS1",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		);
 	};
 
@@ -727,7 +721,7 @@ $O365SKUs = @{
 			"SHAREPOINTWAC_DEVELOPER",
 			"STREAM_O365_E5",
 			"SWAY",
-			"TEAMS1",
+			"TEAMS1"
 		)
 	}
 
@@ -751,7 +745,7 @@ $O365SKUs = @{
 			"STREAM_O365_E3",
 			"SWAY",
 			"TEAMS1",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		)
 	}
 
@@ -783,39 +777,39 @@ $O365SKUs = @{
 			"SWAY",
 			"TEAMS1",
 			"THREAT_INTELLIGENCE",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		)
 	}
 
-	ENTERPRISEPREMIUM_NOPSTNCONF = @{
-		DisplayName = "Office 365 E5 without Audio Conferencing";
-		GUID = [guid]"";
-		ServicePlans = @(
-			"ADALLOM_S_O365",
-			"BI_AZURE_P2",
-			"BPOS_S_TODO_3",
-			"Deskless",
-			"EQUIVIO_ANALYTICS",
-			"EXCHANGE_ANALYTICS",
-			"EXCHANGE_S_ENTERPRISE",
-			"FLOW_O365_P3",
-			"FORMS_PLAN_E5",
-			"LOCKBOX_ENTERPRISE",
-			"MCOEV",
-			"MCOSTANDARD",
-			"OFFICESUBSCRIPTION",
-			"POWERAPPS_O365_P3",
-			"PROJECTWORKMANAGEMENT",
-			"RMS_S_ENTERPRISE",
-			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
-			"STREAM_O365_E5",
-			"SWAY",
-			"TEAMS1",
-			"THREAT_INTELLIGENCE",
-			"YAMMER_ENTERPRISE",
-		)
-	}
+#	ENTERPRISEPREMIUM_NOPSTNCONF = @{
+#		DisplayName = "Office 365 E5 without Audio Conferencing";
+#		GUID = [guid]"";
+#		ServicePlans = @(
+#			"ADALLOM_S_O365",
+#			"BI_AZURE_P2",
+#			"BPOS_S_TODO_3",
+#			"Deskless",
+#			"EQUIVIO_ANALYTICS",
+#			"EXCHANGE_ANALYTICS",
+#			"EXCHANGE_S_ENTERPRISE",
+#			"FLOW_O365_P3",
+#			"FORMS_PLAN_E5",
+#			"LOCKBOX_ENTERPRISE",
+#			"MCOEV",
+#			"MCOSTANDARD",
+#			"OFFICESUBSCRIPTION",
+#			"POWERAPPS_O365_P3",
+#			"PROJECTWORKMANAGEMENT",
+#			"RMS_S_ENTERPRISE",
+#			"SHAREPOINTENTERPRISE",
+#			"SHAREPOINTWAC",
+#			"STREAM_O365_E5",
+#			"SWAY",
+#			"TEAMS1",
+#			"THREAT_INTELLIGENCE",
+#			"YAMMER_ENTERPRISE"
+#		)
+#	}
 
 	DESKLESSPACK = @{
 		DisplayName = "Office 365 F3";
@@ -844,7 +838,7 @@ $O365SKUs = @{
 			"SWAY",
 			"TEAMS1",
 			"WHITEBOARD_FIRSTLINE1",
-			"YAMMER_ENTERPRISE",
+			"YAMMER_ENTERPRISE"
 		);
 	}; # formerly F1
 
@@ -858,7 +852,7 @@ $O365SKUs = @{
 			"SHAREPOINTENTERPRISE_MIDMARKET",
 			"SHAREPOINTWAC",
 			"SWAY",
-			"YAMMER_MIDSIZE",
+			"YAMMER_MIDSIZE"
 		)
 	}
 
@@ -869,7 +863,7 @@ $O365SKUs = @{
 			"EXCHANGE_L_STANDARD",
 			"MCOLITE",
 			"SHAREPOINTLITE",
-			"SWAY",
+			"SWAY"
 		)
 	}
 
@@ -881,7 +875,7 @@ $O365SKUs = @{
 			"MCOLITE",
 			"OFFICE_PRO_PLUS_SUBSCRIPTION_SMBIZ",
 			"SHAREPOINTLITE",
-			"SWAY",
+			"SWAY"
 		)
 	}
 
@@ -892,7 +886,7 @@ $O365SKUs = @{
 			"FORMS_PLAN_E1",
 			"ONEDRIVESTANDARD",
 			"SHAREPOINTWAC",
-			"SWAY",
+			"SWAY"
 		)
 	}
 	WACONEDRIVEENTERPRISE = @{
@@ -900,7 +894,7 @@ $O365SKUs = @{
 		GUID = [guid]"ed01faf2-1d88-4947-ae91-45ca18703a96";
 		ServicePlans = @(
 			"ONEDRIVEENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		)
 	}
 
@@ -917,7 +911,7 @@ $O365SKUs = @{
 		GUID = [guid]"a403ebcc-fae0-4ca2-8c8c-7a907fd6c235";
 		ServicePlans = @(
 			"BI_AZURE_P0",
-			"EXCHANGE_S_FOUNDATION",
+			"EXCHANGE_S_FOUNDATION"
 		)
 	}
 
@@ -926,7 +920,7 @@ $O365SKUs = @{
 		GUID = [guid]"45bc2c81-6072-436a-9b0b-3b12eefbc402";
 		ServicePlans = @(
 			"BI_AZURE_P1",
-			"SQL_IS_SSIM",
+			"SQL_IS_SSIM"
 		)
 	}
 
@@ -934,7 +928,7 @@ $O365SKUs = @{
 		DisplayName = "POWER BI PRO";
 		GUID = [guid]"f8a1db68-be16-40ed-86d5-cb42ce701560";
 		ServicePlans = @(
-			"BI_AZURE_P2",
+			"BI_AZURE_P2"
 		)
 	}
 
@@ -942,7 +936,7 @@ $O365SKUs = @{
 		DisplayName = "PROJECT for Office 365";
 		GUID = [guid]"a10d5e58-74da-4312-95c8-76be4e5b75a0";
 		ServicePlans = @(
-			"PROJECT_CLIENT_SUBSCRIPTION",
+			"PROJECT_CLIENT_SUBSCRIPTION"
 		)
 	}
 
@@ -954,7 +948,7 @@ $O365SKUs = @{
 			"PROJECT_ESSENTIALS",
 			"SHAREPOINTENTERPRISE",
 			"SHAREPOINTWAC",
-			"SWAY",
+			"SWAY"
 		)
 	}
 
@@ -965,7 +959,7 @@ $O365SKUs = @{
 			"PROJECT_CLIENT_SUBSCRIPTION",
 			"SHAREPOINT_PROJECT",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		)
 	}
 
@@ -978,7 +972,7 @@ $O365SKUs = @{
 			"SHAREPOINT_PROJECT",
 			"SHAREPOINTENTERPRISE",
 			"SHAREPOINTWAC",
-			"SWAY",
+			"SWAY"
 		)
 	}
 
@@ -990,7 +984,7 @@ $O365SKUs = @{
 			"PROJECT_CLIENT_SUBSCRIPTION",
 			"SHAREPOINT_PROJECT",
 			"SHAREPOINTENTERPRISE",
-			"SHAREPOINTWAC",
+			"SHAREPOINTWAC"
 		)
 	}
 
@@ -1004,7 +998,7 @@ $O365SKUs = @{
 			"SHAREPOINT_PROJECT",
 			"SHAREPOINTENTERPRISE",
 			"SHAREPOINTWAC",
-			"SWAY",
+			"SWAY"
 		)
 	}
 
@@ -1012,7 +1006,7 @@ $O365SKUs = @{
 		DisplayName = "SHAREPOINT ONLINE (Plan 1)";
 		GUID = [guid]"1fc08a02-8b3d-43b9-831e-f76859e04e1a";
 		ServicePlans = @(
-			"SHAREPOINTSTANDARD",
+			"SHAREPOINTSTANDARD"
 		)
 	}
 	
@@ -1020,7 +1014,7 @@ $O365SKUs = @{
 		DisplayName = "SHAREPOINT ONLINE (Plan 2)";
 		GUID = [guid]"a9732ec9-17d9-494c-a51c-d6b45b384dcb";
 		ServicePlans = @(
-			"SHAREPOINTENTERPRISE",
+			"SHAREPOINTENTERPRISE"
 		)
 	}
 	
@@ -1029,7 +1023,7 @@ $O365SKUs = @{
 		DisplayName = "Skype for Business Online (Plan 1)";
 		GUID = [guid]"b8b749f8-a4ef-4887-9539-c95b1eaa5db7";
 		ServicePlans = @(
-			"MCOIMP",
+			"MCOIMP"
 		)
 	}
 	
@@ -1038,7 +1032,7 @@ $O365SKUs = @{
 		DisplayName = "Skype for Business Online (Plan 2)";
 		GUID = [guid]"d42c793f-6c78-4f43-92ca-e8f6a02b035f";
 		ServicePlans = @(
-			"MCOSTANDARD",
+			"MCOSTANDARD"
 		)
 	}
 	
@@ -1075,7 +1069,7 @@ $O365SKUs = @{
 		GUID = [guid]"4b244418-9658-4451-a2b8-b5e2b364e9bd";
 		ServicePlans = @(
 			"ONEDRIVE_BASIC",
-			"VISIOONLINE",
+			"VISIOONLINE"
 		)
 	}
 	
@@ -1086,7 +1080,7 @@ $O365SKUs = @{
 		ServicePlans = @(
 			"ONEDRIVE_BASIC",
 			"VISIO_CLIENT_SUBSCRIPTION",
-			"VISIOONLINE",
+			"VISIOONLINE"
 		)
 	}
 	
@@ -1095,7 +1089,7 @@ $O365SKUs = @{
 		DisplayName = "WINDOWS 10 ENTERPRISE E3";
 		GUID = [guid]"cb10e6cd-9da4-4992-867b-67546b1db821";
 		ServicePlans = @(
-			"WIN10_PRO_ENT_SUB",
+			"WIN10_PRO_ENT_SUB"
 		)
 	}
 	
@@ -1125,52 +1119,66 @@ $O365SKUs = @{
 	};
 
 	PHONESYSTEM_VIRTUALUSER = @{
-		DisplayName = "Microsoft 365 Phone System Virtual User";
-		GUID = [guid]"";
+		DisplayName = "Microsoft 365 Phone System: Virtual User";
+		GUID = [guid]"440eaaa8-b3e0-484b-a8be-62870b9ba70a";
 		ServicePlans = @();
 	};
 
-	MCOCAP = @{
-		DisplayName = "Common Area Phone";
-		GUID = [guid]"";
-		ServicePlans = @();
-	};
-
-	MEETING_ROOM = @{
-		DisplayName = "Meeting Room";
-		GUID = [guid]"";
-		ServicePlans = @();
-	};
-
-	BUSINESS_VOICE_DIRECTROUTING_MED = @{
-		DisplayName = "Microsoft 365 Business Voice (without Calling Plan) for US";
-		GUID = [guid]"";
-		ServicePlans = @();
-	};
-
-	TEAMS_EXPLORATORY = @{
-		DisplayName = "Teams Exploratory Experience";
-		GUID = [guid]"";
-		ServicePlans = @();
-	};
-
+#	MCOCAP = @{
+#		DisplayName = "Common Area Phone";
+#		GUID = [guid]"";
+#		ServicePlans = @();
+#	};
+#
+#	MEETING_ROOM = @{
+#		DisplayName = "Meeting Room";
+#		GUID = [guid]"";
+#		ServicePlans = @();
+#	};
+#
+#	BUSINESS_VOICE_DIRECTROUTING_MED = @{
+#		DisplayName = "Microsoft 365 Business Voice (without Calling Plan) for US";
+#		GUID = [guid]"";
+#		ServicePlans = @();
+#	};
+#
+#	TEAMS_EXPLORATORY = @{
+#		DisplayName = "Teams Exploratory Experience";
+#		GUID = [guid]"";
+#		ServicePlans = @();
+#	};
+#
 	RMSBASIC = @{
 		DisplayName = "Rights Management Service Basic Content Protection";
-		GUID = [guid]"";
+		GUID = [guid]"093e8d14-a334-43d9-93e3-30589a8b47d0";
 		ServicePlans = @();
 	};
+#
+#	BUSINESS_VOICE_MED2 = @{
+#		DisplayName = "Microsoft 365 Business Voice";
+#		GUID = [guid]"";
+#		ServicePlans = @();
+#	};
 
+    MCOPSTNC = @{
+        DisplayName = "Skype for Business: Calling Plan";
+        GUID = [guid]"47794cd0-f0e5-45c5-9033-2eb6b5fc84e0";
+    }
 
+    DYN365_TEAM_MEMBERS = @{
+        DisplayName = "Dynamics 365: Team Members";
+        GUID = [guid]"7ac9fe77-66b7-4e5e-9e46-10eed1cff547";
+    }
 
-	BUSINESS_VOICE_MED2 = @{
-		DisplayName = "Microsoft 365 Business Voice";
-		GUID = [guid]"";
-		ServicePlans = @();
-	};
+    FORMS_PRO = @{
+        DisplayName = "Forms Pro";
+        GUID = [guid]"bc946dac-7877-4271-b2f7-99d2db13cd2c";
+    }
 
-
-
-
+    SMB_APPS = @{
+        DisplayName = "Business Apps";
+        GUID = [guid]"90d8b3f8-712e-4f7b-aa1e-62e7ae6cbe96";
+    }
 
 
 } # O365SKUs[]
@@ -1185,12 +1193,12 @@ $O365Services = @{
 	};
 
 	AAD_PREMIUM = @{
-		DisplayName = "Azure AD Premium P1";
+		DisplayName = "Azure AD Premium";
 		GUID = [guid]"41781fb2-bc02-4b7c-bd55-b576c07bb09d";
 	};
 
 	AAD_PREMIUM_P2 = @{
-		DisplayName = "Azure AD Premium P2";
+		DisplayName = "Azure AD Premium (Plan 2)";
 		GUID = [guid]"eec0eb4f-6444-4f95-aba0-50c24d67f998";
 	};
 
@@ -1205,7 +1213,7 @@ $O365Services = @{
 	};
 
 	MCOMEETADV = @{
-		DisplayName = "Audio Conferencing";
+		DisplayName = "Microsoft 365 Phone System: Audio Conferencing";
 		GUID = [guid]"3e26ee1f-8a5f-4d52-aee2-b81ce45c8f40";
 	};
 
@@ -1215,47 +1223,47 @@ $O365Services = @{
 	};
 
 	EXCHANGE_S_FOUNDATION = @{
-		DisplayName = "Exchange Foundation";
+		DisplayName = "Exchange Online: Foundation";
 		GUID = [guid]"113feb6c-3fe4-4440-bddc-54d774bf0318";
 	};
 
 	EXCHANGE_S_STANDARD = @{
-		DisplayName = "Exchange Online (Plan 1)";
+		DisplayName = "Exchange Online: Standard";
 		GUID = [guid]"9aaf7827-d63c-4b61-89c3-182f06f82e5c";
 	};
 
 	EXCHANGE_S_ENTERPRISE = @{
-		DisplayName = "Exchange Online (Plan 2)";
+		DisplayName = "Exchange Online: Enterprise";
 		GUID = [guid]"efb87545-963c-4e0d-99df-69c6916d9eb0";
 	};
 
 	EXCHANGE_S_ESSENTIALS = @{
-		DisplayName = "EXCHANGE_S_ESSENTIALS";
+		DisplayName = "Exchange Online: Essentials";
 		GUID = [guid]"1126bef5-da20-4f07-b45e-ad25d2581aa8";
 	};
 
 	EXCHANGE_S_DESKLESS = @{
-		DisplayName = "Exchange Online Kiosk";
+		DisplayName = "Exchange Online: Kiosk";
 		GUID = [guid]"4a82b400-a79f-41a4-b4e2-e94f5787b113";
 	};
 
 	EXCHANGE_B_STANDARD = @{
-		DisplayName = "Exchange Online POP";
+		DisplayName = "Exchange Online: POP";
 		GUID = [guid]"90927877-dcff-4af6-b346-2332c0b15bb7";
 	};
 
 	EXCHANGE_S_ARCHIVE_ADDON = @{
-		DisplayName = "Exchange Online Archiving for Exchange Online";
+		DisplayName = "Exchange Online: Archiving";
 		GUID = [guid]"176a09a6-7ec5-4039-ac02-b2791c6ba793";
 	};
 
 	EXCHANGE_S_ARCHIVE = @{
-		DisplayName = "Exchange Online Archiving for Exchange Server";
+		DisplayName = "Exchange Online: Archiving for Exchange Server";
 		GUID = [guid]"da040e0a-b393-4bea-bb76-928b3fa1cf5a";
 	};
 
 	ADALLOM_S_DISCOVERY = @{
-		DisplayName = "Cloud App Security Discovery";
+		DisplayName = "Cloud App Security: Discovery";
 		GUID = [guid]"932ad362-64a8-4783-9106-97849a1a30b9";
 	};
 
@@ -1265,19 +1273,24 @@ $O365Services = @{
 	};
 
 	RMS_S_ENTERPRISE = @{
-		DisplayName = "Azure Rights Management";
+		DisplayName = "Azure Information Protection: Enterprise";
 		GUID = [guid]"bea4c11e-220a-4e6d-8eb8-8ea15d019f90";
 	};
 
 	RMS_S_PREMIUM = @{
-		DisplayName = "Azure Information Protection Premium P1";
+		DisplayName = "Azure Information Protection";
 		GUID = [guid]"6c57d4b6-3b23-47a5-9bc9-69f17b4947b3";
 	};
 
 	RMS_S_PREMIUM2 = @{
-		DisplayName = "Azure Information Protection Premium P2";
+		DisplayName = "Azure Information Protection (Plan 2)";
 		GUID = [guid]"5689bec4-755d-4753-8b61-40975025187c";
 	};
+
+    RMS_S_ENTERPRISE_GOV = @{
+        DisplayName = "Azure Information Protection: Enterprise";
+        GUID = [guid]"6a76346d-5d6e-4051-9fe3-ed3f312b5597";
+    };
 
 	ATA = @{
 		DisplayName = "Azure Advanced Threat Protection";
@@ -1290,12 +1303,12 @@ $O365Services = @{
 	};
 
 	OFFICE_BUSINESS = @{
-		DisplayName = "Office 365 Business";
+		DisplayName = "Microsoft Apps for Business";
 		GUID = [guid]"094e7854-93fc-4d55-b2c0-3ab5369ebdc1";
 	};
 
 	ONEDRIVESTANDARD = @{
-		DisplayName = "ONEDRIVESTANDARD";
+		DisplayName = "OneDrive for Business: Standard";
 		GUID = [guid]"13696edf-5a08-49f6-8134-03083ed8ba30";
 	};
 
@@ -1310,12 +1323,12 @@ $O365Services = @{
 	};
 
 	OFFICESUBSCRIPTION = @{
-		DisplayName = "Office 365 ProPlus";
+		DisplayName = "Microsoft Apps for Enterprise (ProPlus)";
 		GUID = [guid]"43de0ff5-c92c-492b-9116-175376d08c38";
 	};
 
 	BPOS_S_TODO_1 = @{
-		DisplayName = "BPOS_S_TODO_1";
+		DisplayName = "Microsoft To-Do";
 		GUID = [guid]"5e62787c-c316-451f-b873-1d05acd4d12c";
 	};
 
@@ -1334,18 +1347,13 @@ $O365Services = @{
 		GUID = [guid]"c63d4d19-e8cb-460e-b37c-4d6c34603745";
 	};
 
-	POWERAPPS_O365_P1 = @{
-		DisplayName = "PowerApps for Office 365";
-		GUID = [guid]"92f7a6f3-b89b-4bbd-8c30-809e6da5ad1c";
-	};
-
 	PROJECTWORKMANAGEMENT = @{
 		DisplayName = "Microsoft Planner";
 		GUID = [guid]"b737dad2-2f6c-4c65-90e3-ca563267e8b9";
 	};
 
 	SHAREPOINTSTANDARD = @{
-		DisplayName = "SHAREPOINTSTANDARD";
+		DisplayName = "SharePoint: Standard";
 		GUID = [guid]"c7699d2e-19aa-44de-8edf-1736da088ca1";
 	};
 
@@ -1355,7 +1363,7 @@ $O365Services = @{
 	};
 
 	YAMMER_MIDSIZE = @{
-	DisplayName= "YAMMER_MIDSIZE";
+	DisplayName= "Yammer (midsize)";
 		GUID = [guid]"41bf139a-4e60-409f-9346-a1361efc6dfb";
 	};
 
@@ -1385,7 +1393,7 @@ $O365Services = @{
 	};
 
 	INTUNE_SMBIZ = @{
-		DisplayName = "Intune_SMBIZ";
+		DisplayName = "Intune (smbiz)";
 		GUID = [guid]"8e9ff0ff-aa7a-4b20-83c1-2f636b600ac2";
 	};
 
@@ -1417,11 +1425,6 @@ $O365Services = @{
 	ADALLOM_S_O365 = @{ 
 		DisplayName = "Office 365 Cloud App Security";
 		GUID = [guid]"8c098270-9dd4-4350-9b30-ba4703f3b36b";
-	};
-
-	ADALLOM_S_DISCOVERY = @{ 
-		DisplayName = "Office 365 Cloud App Discovery";
-		GUID = [guid]"932ad362-64a8-4783-9106-97849a1a30b9";
 	};
 
 	ATP_ENTERPRISE = @{ 
@@ -1575,17 +1578,17 @@ $O365Services = @{
 	};
 
 	FLOW_DYN_APPS = @{ 
-		DisplayName = "";
+		DisplayName = "Flow for Dynamics 365 Apps";
 		GUID = [guid]"7e6d7d78-73de-46ba-83b1-6d25117334ba";
 	};
 
 	FLOW_DYN_P2 = @{ 
-		DisplayName = "Flow for Dynamics 365";
+		DisplayName = "Flow for Dynamics 365 (Plan 2)";
 		GUID = [guid]"b650d915-9886-424b-a08d-633cede56f57";
 	};
 
 	FLOW_DYN_TEAM = @{ 
-		DisplayName = "Flow for Dynamics 365";
+		DisplayName = "Flow for Dynamics 365: Team Members";
 		GUID = [guid]"1ec58c70-f69c-486a-8109-4b87ce86e449";
 	};
 
@@ -1610,7 +1613,7 @@ $O365Services = @{
 	};
 
 	FORMS_PLAN_E5 = @{ 
-		DisplayName = "Microsoft forms (Plan E5)";
+		DisplayName = "Microsoft Forms (Plan E5)";
 		GUID = [guid]"e212cbc7-0961-4c40-9825-01117710dcb1";
 	};
 
@@ -1635,7 +1638,7 @@ $O365Services = @{
 	};
 
 	KAIZALA_O365_P1 = @{ 
-		DisplayName = "Microsoft Kaizala Pro Plan 1";
+		DisplayName = "Microsoft Kaizala Pro (Plan 1)";
 		GUID = [guid]"73b2a583-6a59-42e3-8e83-54db46bc3278";
 	};
 
@@ -1655,12 +1658,12 @@ $O365Services = @{
 	};
 
 	MCOEVSMB = @{ 
-		DisplayName = "SKYPE FOR BUSINESS CLOUD PBX FOR SMALL AND MEDIUM BUSINESS";
+		DisplayName = "Microsoft 365 Phone System for Small and Medium Business";
 		GUID = [guid]"ed777b71-af04-42ca-9798-84344c66f7c6";
 	};
 
 	MCOFREE = @{ 
-		DisplayName = "MCO FREE FOR MICROSOFT TEAMS (FREE)";
+		DisplayName = "Microsoft Communicator Online (Free)";
 		GUID = [guid]"617d9209-3b90-4879-96e6-838c42b2701d";
 	};
 
@@ -1670,7 +1673,7 @@ $O365Services = @{
 	};
 
 	MCOLITE = @{ 
-		DisplayName = "SKYPE FOR BUSINESS ONLINE (PLAN P1)";
+		DisplayName = "Skype for Business Online (PLAN P1)";
 		GUID = [guid]"70710b6b-3ab4-4a38-9f6d-9f169461650a";
 	};
 
@@ -1690,23 +1693,18 @@ $O365Services = @{
 	};
 
 	MCOSTANDARD_MIDMARKET = @{ 
-		DisplayName = "SKYPE FOR BUSINESS ONLINE (PLAN 2) FOR MIDSIZE";
+		DisplayName = "Skype for Business Online (PLAN 2) FOR MIDSIZE";
 		GUID = [guid]"b2669e95-76ef-4e7e-a367-002f60a39f3e";
 	};
 
 	MCOVOICECONF = @{ 
-		DisplayName = "SKYPE FOR BUSINESS ONLINE (PLAN 3)";
+		DisplayName = "Skype for Business Online (PLAN 3)";
 		GUID = [guid]"27216c54-caf8-4d0d-97e2-517afb5c08f6";
 	};
 
 	MDM_SALES_COLLABORATION = @{ 
-		DisplayName = "MICROSOFT DYNAMICS MARKETING SALES COLLABORATION";
+		DisplayName = "Dynamics 365: Marketing Sales Collaboration";
 		GUID = [guid]"3413916e-ee66-4071-be30-6f94d4adfeda";
-	};
-
-	MFA_PREMIUM = @{ 
-		DisplayName = "Microsoft Azure Multi-Factor Authentication";
-		GUID = [guid]"8a256a2b-b617-496d-b51b-e76466e88db0";
 	};
 
 	MICROSOFT_SEARCH = @{ 
@@ -1715,12 +1713,12 @@ $O365Services = @{
 	};
 
 	MIP_S_CLP1 = @{ 
-		DisplayName = "Information Protection for Office 365 - Standard";
+		DisplayName = "Information Protection for Office 365: Standard";
 		GUID = [guid]"5136a095-5cf0-4aff-bec3-e84448b38ea5";
 	};
 
 	MIP_S_CLP2 = @{ 
-		DisplayName = "Information Protection for Office 365 - Premium";
+		DisplayName = "Information Protection for Office 365: Premium";
 		GUID = [guid]"efb0351d-3b08-4503-993d-383af8de41e3";
 	};
 
@@ -1735,12 +1733,12 @@ $O365Services = @{
 	};
 
 	NBPROFESSIONALFORCRM = @{ 
-		DisplayName = "MICROSOFT SOCIAL ENGAGEMENT PROFESSIONAL";
+		DisplayName = "Microsoft Social Engagement Professional";
 		GUID = [guid]"3e58e97c-9abe-ebab-cd5f-d543d1529634";
 	};
 
 	OFFICE_PRO_PLUS_SUBSCRIPTION_SMBIZ = @{ 
-		DisplayName = "OFFICE_PRO_PLUS_SUBSCRIPTION_SMBIZ";
+		DisplayName = "Microsoft Apps for Business (ProPlus)";
 		GUID = [guid]"8ca59559-e2ca-470b-b7dd-afd8c0dee963";
 	};
 
@@ -1750,7 +1748,7 @@ $O365Services = @{
 	};
 
 	ONEDRIVE_BASIC = @{ 
-		DisplayName = "ONEDRIVE_BASIC";
+		DisplayName = "OneDrive for Business: Basic";
 		GUID = [guid]"da792a53-cbc0-4184-a10d-e544dd34b3c1";
 	};
 
@@ -1825,7 +1823,7 @@ $O365Services = @{
 	};
 
 	RMS_S_BASIC = @{ 
-		DisplayName = "Microsoft Azure Rights Management Service";
+		DisplayName = "Azure Information Protection: Basic";
 		GUID = [guid]"31cf2cfc-6b0d-4adc-a336-88b724ed8122";
 	};
 
@@ -1840,12 +1838,12 @@ $O365Services = @{
 	};
 
 	SHAREPOINTENTERPRISE_MIDMARKET = @{ 
-		DisplayName = "SHAREPOINTENTERPRISE_MIDMARKET";
+		DisplayName = "SharePoint Online: Enterprise (midmarket)";
 		GUID = [guid]"6b5b6a67-fc72-4a1f-a2b5-beecf05de761";
 	};
 
 	SHAREPOINTLITE = @{ 
-		DisplayName = "SHAREPOINTLITE";
+		DisplayName = "SharePoint Online: Lite";
 		GUID = [guid]"a1f3d0a8-84c0-4ae0-bae4-685917b8ab48";
 	};
 
@@ -1855,7 +1853,7 @@ $O365Services = @{
 	};
 
 	SHAREPOINT_PROJECT = @{ 
-		DisplayName = "Project Online Service";
+		DisplayName = "Project Online for SharePoint";
 		GUID = [guid]"fe71d6c3-a2ea-4499-9778-da042bf08063";
 	};
 
@@ -1905,12 +1903,12 @@ $O365Services = @{
 	};
 
 	VISIO_CLIENT_SUBSCRIPTION = @{ 
-		DisplayName = "VISIO_CLIENT_SUBSCRIPTION";
+		DisplayName = "Visio Online: Desktop Client";
 		GUID = [guid]"663a804f-1c30-4ff0-9915-9db84f0d1cea";
 	};
 
 	"Virtualization Rights for Windows 10 (E3/E5+VDA)" = @{ 
-		DisplayName = "";
+		DisplayName = "Virtualization Rights for Windows 10 (E3/E5+VDA)";
 		GUID = [guid]"e7c91390-7625-45be-94e0-e16907e03118";
 	};
 
@@ -1944,101 +1942,88 @@ $O365Services = @{
 $O365Conflicts = @(
 	@{
 		DisplayName = "Dynamics CRM";
-		ServicePlans = @(
-			CRMPLAN1	119cf168-b6cf-41fb-b82e-7fee7bae5814
-			CRMPLAN2	bf36ca64-95c6-4918-9275-eb9f4ce2c04f
-			CRMSTANDARD	f9646fb2-e3b2-4309-95de-dc4833737456
-			DYN365_ENTERPRISE_CUSTOMER_SERVICE	99340b49-fb81-4b1e-976b-8f2ae8e9394f
-			DYN365_ENTERPRISE_P1	d56f3deb-50d8-465a-bedb-f079817ccac1
-			DYN365_ENTERPRISE_P1_IW	056a5f80-b4e0-4983-a8be-7ad254a113c9
-			DYN365_ENTERPRISE_SALES	2da8e897-7791-486b-b08f-cc63c8129df7
-			DYN365_ENTERPRISE_TEAM_MEMBERS	6a54b05e-4fab-40e7-9828-428db3b336fa
-			EMPLOYEE_SELF_SERVICE	ba5f0cfa-d54a-4ea0-8cf4-a7e1dc4423d8
-		);
+		ServicePlans = @{
+			CRMPLAN1 = 	[guid]"119cf168-b6cf-41fb-b82e-7fee7bae5814"
+			CRMPLAN2 =  [guid]"bf36ca64-95c6-4918-9275-eb9f4ce2c04f"
+			CRMSTANDARD =  [guid]"f9646fb2-e3b2-4309-95de-dc4833737456"
+			DYN365_ENTERPRISE_CUSTOMER_SERVICE =  [guid]"99340b49-fb81-4b1e-976b-8f2ae8e9394f"
+			DYN365_ENTERPRISE_P1 =  [guid]"d56f3deb-50d8-465a-bedb-f079817ccac1"
+			DYN365_ENTERPRISE_P1_IW =  [guid]"056a5f80-b4e0-4983-a8be-7ad254a113c9"
+			DYN365_ENTERPRISE_SALES =  [guid]"2da8e897-7791-486b-b08f-cc63c8129df7"
+			DYN365_ENTERPRISE_TEAM_MEMBERS =  [guid]"6a54b05e-4fab-40e7-9828-428db3b336fa"
+			EMPLOYEE_SELF_SERVICE =  [guid]"ba5f0cfa-d54a-4ea0-8cf4-a7e1dc4423d8"
+		};
 	},
 	@{
 		DisplayName = "Exchange Online";
-		ServicePlans = @(
-			EXCHANGE_B_STANDARD	90927877-dcff-4af6-b346-2332c0b15bb7
-			EXCHANGE_L_STANDARD	d42bdbd6-c335-4231-ab3d-c8f348d5aff5
-			EXCHANGE_S_ARCHIVE	da040e0a-b393-4bea-bb76-928b3fa1cf5a
-			EXCHANGE_S_DESKLESS	4a82b400-a79f-41a4-b4e2-e94f5787b113
-			EXCHANGE_S_ENTERPRISE	efb87545-963c-4e0d-99df-69c6916d9eb0
-			EXCHANGE_S_ESSENTIALS	1126bef5-da20-4f07-b45e-ad25d2581aa8
-			EXCHANGE_S_STANDARD	9aaf7827-d63c-4b61-89c3-182f06f82e5c
-			EXCHANGE_S_STANDARD_MIDMARKET	fc52cc4b-ed7d-472d-bbe7-b081c23ecc56
-		)
+		ServicePlans = @{
+			EXCHANGE_B_STANDARD =  [guid]"90927877-dcff-4af6-b346-2332c0b15bb7"
+			EXCHANGE_L_STANDARD =  [guid]"d42bdbd6-c335-4231-ab3d-c8f348d5aff5"
+			EXCHANGE_S_ARCHIVE =  [guid]"da040e0a-b393-4bea-bb76-928b3fa1cf5a"
+			EXCHANGE_S_DESKLESS =  [guid]"4a82b400-a79f-41a4-b4e2-e94f5787b113"
+			EXCHANGE_S_ENTERPRISE =  [guid]"efb87545-963c-4e0d-99df-69c6916d9eb0"
+			EXCHANGE_S_ESSENTIALS =  [guid]"1126bef5-da20-4f07-b45e-ad25d2581aa8"
+			EXCHANGE_S_STANDARD =  [guid]"9aaf7827-d63c-4b61-89c3-182f06f82e5c"
+			EXCHANGE_S_STANDARD_MIDMARKET =  [guid]"fc52cc4b-ed7d-472d-bbe7-b081c23ecc56"
+		};
 	},
 	@{
-		DisplayName = "Microsoft 365";
-		ServicePlans = @(
-			RMS_S_ENTERPRISE	bea4c11e-220a-4e6d-8eb8-8ea15d019f90
-			RMS_S_ENTERPRISE_GOV	6a76346d-5d6e-4051-9fe3-ed3f312b5597
-		)
+		DisplayName = "Azure Rights Management";
+		ServicePlans = @{
+			RMS_S_ENTERPRISE =  [guid]"bea4c11e-220a-4e6d-8eb8-8ea15d019f90"
+			RMS_S_ENTERPRISE_GOV =  [guid]"6a76346d-5d6e-4051-9fe3-ed3f312b5597"
+		};
 	},
 	@{
 		DisplayName = "Intune";
-		ServicePlans = @(
-			INTUNE_A	c1ec4a95-1f05-45b3-a911-aa3fa01094f5
-			INTUNE_A_VL	3e170737-c728-4eae-bbb9-3f3360f7184c
-			INTUNE_B	2dc63b8a-df3d-448f-b683-8655877c9360
-		)
+		ServicePlans = @{
+			INTUNE_A =  [guid]"c1ec4a95-1f05-45b3-a911-aa3fa01094f5"
+			INTUNE_A_VL =  [guid]"3e170737-c728-4eae-bbb9-3f3360f7184c"
+			INTUNE_B =  [guid]"2dc63b8a-df3d-448f-b683-8655877c9360"
+		};
 	},
 	@{
 		DisplayName = "SharePoint Online";
-		ServicePlans = @(
-			ONEDRIVEENTERPRISE	afcafa6a-d966-4462-918c-ec0b4e0fe642
-			SHAREPOINT_S_DEVELOPER	a361d6e2-509e-4e25-a8ad-950060064ef4
-			SHAREPOINTDESKLESS	902b47e5-dcb2-4fdc-858b-c63a90a2bdb9
-			SHAREPOINTENTERPRISE	5dbe027f-2339-4123-9542-606e4d348a72
-			SHAREPOINTENTERPRISE_EDU	63038b2c-28d0-45f6-bc36-33062963b498
-			SHAREPOINTENTERPRISE_MIDMARKET	6b5b6a67-fc72-4a1f-a2b5-beecf05de761
-			SHAREPOINTLITE	a1f3d0a8-84c0-4ae0-bae4-685917b8ab48
-			SHAREPOINTSTANDARD	c7699d2e-19aa-44de-8edf-1736da088ca1
-			SHAREPOINTSTANDARD_EDU	0a4983bb-d3e5-4a09-95d8-b2d0127b3df5
-			SHAREPOINTSTANDARD_YAMMERSHADOW	4c9efd0c-8de7-4c71-8295-9f5fdb0dd048
-		)
+		ServicePlans = @{
+			ONEDRIVEENTERPRISE =  [guid]"afcafa6a-d966-4462-918c-ec0b4e0fe642"
+			SHAREPOINT_S_DEVELOPER =  [guid]"a361d6e2-509e-4e25-a8ad-950060064ef4"
+			SHAREPOINTDESKLESS =  [guid]"902b47e5-dcb2-4fdc-858b-c63a90a2bdb9"
+			SHAREPOINTENTERPRISE =  [guid]"5dbe027f-2339-4123-9542-606e4d348a72"
+			SHAREPOINTENTERPRISE_EDU =  [guid]"63038b2c-28d0-45f6-bc36-33062963b498"
+			SHAREPOINTENTERPRISE_MIDMARKET =  [guid]"6b5b6a67-fc72-4a1f-a2b5-beecf05de761"
+			SHAREPOINTLITE =  [guid]"a1f3d0a8-84c0-4ae0-bae4-685917b8ab48"
+			SHAREPOINTSTANDARD =  [guid]"c7699d2e-19aa-44de-8edf-1736da088ca1"
+			SHAREPOINTSTANDARD_EDU =  [guid]"0a4983bb-d3e5-4a09-95d8-b2d0127b3df5"
+			SHAREPOINTSTANDARD_YAMMERSHADOW =  [guid]"4c9efd0c-8de7-4c71-8295-9f5fdb0dd048"
+		};
 	},
 	@{
 		DisplayName = "Skype for Business";
-		ServicePlans = @(
-			MCOIMP	afc06cb0-b4f4-4473-8286-d644f70d8faf
-			MCOSTANDARD_MIDMARKET	b2669e95-76ef-4e7e-a367-002f60a39f3e
-			MCOSTANDARD	0feaeb32-d00e-4d66-bd5a-43b5b83db82c
-			MCOLITE	70710b6b-3ab4-4a38-9f6d-9f169461650a
-		)
+		ServicePlans = @{
+			MCOIMP =  [guid]"afc06cb0-b4f4-4473-8286-d644f70d8faf"
+			MCOSTANDARD_MIDMARKET =  [guid]"b2669e95-76ef-4e7e-a367-002f60a39f3e"
+			MCOSTANDARD =  [guid]"0feaeb32-d00e-4d66-bd5a-43b5b83db82c"
+			MCOLITE =  [guid]"70710b6b-3ab4-4a38-9f6d-9f169461650a"
+		};
 	},
 	@{
 		DisplayName = "Skype for Business: Calling Plan";
-		ServicePlans = @(
-			MCOPSTN1	4ed3ff63-69d7-4fb7-b984-5aec7f605ca8
-			MCOPSTN2	5a10155d-f5c1-411a-a8ec-e99aae125390
-			MCOPSTN5	54a152dc-90de-4996-93d2-bc47e670fc06
-		)
+		ServicePlans = @{
+			MCOPSTN1 =  [guid]"4ed3ff63-69d7-4fb7-b984-5aec7f605ca8"
+			MCOPSTN2 =  [guid]"5a10155d-f5c1-411a-a8ec-e99aae125390"
+			MCOPSTN5 =  [guid]"54a152dc-90de-4996-93d2-bc47e670fc06"
+		};
 	},
 	@{
 		DisplayName = "Yammer";
-		ServicePlans = @(
-			YAMMER_ENTERPRISE	7547a3fe-08ee-4ccb-b430-5077c5041653
-			YAMMER_EDU	2078e8df-cff6-4290-98cb-5408261a760a
-			YAMMER_MIDSIZE	41bf139a-4e60-409f-9346-a1361efc6dfb
-		)
+		ServicePlans = @{
+			YAMMER_ENTERPRISE =  [guid]"7547a3fe-08ee-4ccb-b430-5077c5041653"
+			YAMMER_EDU =  [guid]"2078e8df-cff6-4290-98cb-5408261a760a"
+			YAMMER_MIDSIZE =  [guid]"41bf139a-4e60-409f-9346-a1361efc6dfb"
+		};
 	}
 		
 		
 )
 
 
-
-$mySKUs = Get-MsolAccountSku #-TenantId
-
-
-$O365SKUs.Keys | % { "$_ is $($O365SKUs.$_)" }
-$O365SKUs.GetEnumerator() | % { "$($_.key) is $($_.value.DisplayName)" }
-
-$O365SKUs.Keys | Get-ADGroup
-
-
-
-
-#create service plan dynamic groups and set "mailNickname" to the short-name.
