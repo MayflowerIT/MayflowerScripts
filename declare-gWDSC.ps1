@@ -4,7 +4,34 @@ New-Variable -Option Constant -Name DDCP  -Value "{6AC1786C-016F-11D2-945F-00C04
 
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
 
-Configuration gwManaged
+
+if (!(Get-Command Get-AutomationVariable -ErrorAction SilentlyContinue))
+{
+	# not running in Azure
+	$gWdsc = 
+	@{
+		AllNodes = 
+		@(
+			@{
+				NodeName = "*" # not a wildcard; hard-coded "all nodes"
+				
+			},
+			@{
+				NodeName	= "MAKMD",
+				DistinguishedName = "DC=AlbertMakMD,DC=net",
+				DomainDNSName = "AlbertMakMD.net",
+				
+				Role		= "ADDSDC"
+			}
+		);
+		NonNodeData = 
+		@{
+			ConfigFileContents = ""
+		};
+	}
+}
+
+Configuration gW
 {
     #Param
     #(
@@ -42,16 +69,8 @@ Configuration gwManaged
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
-    Node ADDSDC
+    Node $AllNodes.Where{$_.Role -eq "ADDSDC"}.NodeName
     { # Active Directory Domain Services, Domain Controller
-        Service OIService
-        { # Log shipping to Azure
-            Name = "HealthService"
-            State = "Running"
-
-            DependsOn = "[Package]OI"
-        }
-
         xService RslService
         { 
             Name = $RslService
@@ -183,21 +202,13 @@ Configuration gwManaged
             Arguments = "/qn DEPLOYID=" + $NetDeployID
         }
 
-        xRemoteFile OIPackage
-        { # The Microsoft Monitoring Agent installer
-            Uri = "https://go.microsoft.com/fwlink/?LinkId=828603"
-            DestinationPath = $OIPackageLocalPath
+        MMAgent OMSnode
+        {
+            OPSINSIGHTS_PID    = $OPSINSIGHTS_PID
+            OPSINSIGHTS_WS_ID  = $OPSINSIGHTS_WS_ID
+            OPSINSIGHTS_WS_KEY = $OPSINSIGHTS_WS_KEY
         }
 
-        Package OI
-        { # The Microsoft Management Agent installation package with workspace ID and key.
-            Ensure = "Present"
-            Path  = $OIPackageLocalPath
-            Name = "Microsoft Monitoring Agent"
-            ProductId = $OPSINSIGHTS_PID
-            Arguments = '/C:"setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_ID=' + $OPSINSIGHTS_WS_ID + ' OPINSIGHTS_WORKSPACE_KEY=' + $OPSINSIGHTS_WS_KEY + ' AcceptEndUserLicenseAgreement=1"'
-            DependsOn = "[xRemoteFile]OIPackage"
-        }
     }
 
     #Node ADDSTH
