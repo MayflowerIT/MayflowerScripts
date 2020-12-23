@@ -5,30 +5,26 @@ New-Variable -Option Constant -Name DDCP  -Value "{6AC1786C-016F-11D2-945F-00C04
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
 
 
-if (!(Get-Command Get-AutomationVariable -ErrorAction SilentlyContinue))
-{
-	# not running in Azure
-	$gWdsc = 
-	@{
-		AllNodes = 
-		@(
-			@{
-				NodeName = "*" # not a wildcard; hard-coded "all nodes"
-				
-			},
-			@{
-				NodeName	= "MAKMD",
-				DistinguishedName = "DC=AlbertMakMD,DC=net",
-				DomainDNSName = "AlbertMakMD.net",
-				
-				Role		= "ADDSDC"
-			}
-		);
-		NonNodeData = 
+$gW = 
+@{
+	AllNodes = 
+	@(
 		@{
-			ConfigFileContents = ""
-		};
-	}
+			NodeName = "*" # not a wildcard; hard-coded "all nodes"
+			
+		},
+		@{
+			NodeName	= "MAKMD",
+			DistinguishedName = "DC=AlbertMakMD,DC=net",
+			DomainDNSName = "AlbertMakMD.net",
+			
+			Role		= "ADDSDC"
+		}
+	);
+	NonNodeData = 
+	@{
+		ConfigFileContents = ""
+	};
 }
 
 Configuration gW
@@ -250,4 +246,19 @@ Configuration gW
         #    DependsOn = "[xRemoteFile]OIPackage"
         #}
     }
+}
+
+if (!(Get-Command Get-AutomationVariable -ErrorAction SilentlyContinue | Out-Null))
+{
+	Install-Module -Scope AllUsers -Name Az
+	Connect-AzAccount
+	$MySubscription = "c42f346f-e80f-48e5-ad8e-30a25c669714" # Assigned Partner Benefit
+	Set-AzContext -Subscription $MySubscription
+	$MyResourceGroup = 'Kalimdor'
+	$MyAutomationAccount = 'Drustvar'
+	
+	Import-AzAutomationDscConfiguration -SourcePath $PSCommandPath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -Published
+
+	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gW
+	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'MyNodeConfiguration' -Path 'C:\MyConfigurations\TestVM1.mof'
 }
