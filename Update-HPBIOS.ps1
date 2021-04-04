@@ -1,3 +1,6 @@
+#Reqiores -Modules HPCMSL
+#Requires -RunAsAdministrator
+
 $Uptime = Get-HPDeviceUptime
 $OneHour = New-TimeSpan -Hours 1
 
@@ -8,10 +11,11 @@ $FirmwareVersion = Get-HPBIOSVersion -ErrorAction STOP
 $FirmwareUpdates = Get-HPBIOSUpdates -ErrorAction STOP
 
 $FirmwareUpdatesApplicable = $FirmwareUpdates | where Ver -ge $FirmwareVersion
+# '-ge' so that our list isn't empty
 $FirmwareUpdateApplicable = $FirmwareUpdatesApplicable[0]
 
 $Softpaqs = Get-Softpaq
-$FirmwareSoftpaqs = $Softpaqs | where Name -like '*BIOS*'
+$FirmwareSoftpaqs = $Softpaqs | where Name -like '*BIOS*' -or Name -like '*Firmware*'
 $FirmwareSoftpaqsApplicable = $FirmwareSoftpaqs | where Version -eq $FirmwareUpdateApplicable.Ver
 
 $AssetTag = Get-HPDeviceAssetTag
@@ -23,8 +27,9 @@ if ($AssetTag -eq $SerialNumber)
   
 }
 
-Get if BIOS password.
-$IsFirmwarePasswordSet = Get-HPBIOSSetupPasswordIsSet
+$FirmwarePasswordIsSet = Get-HPBIOSSetupPasswordIsSet
+
+$FirmwarePassword = Read-Host -AsSecureString -Prompt "Firmware Configuration Password"
 
 If BIOS password is unknown, then fail.
 
@@ -41,8 +46,10 @@ If BIOS version is current and no Windows Update is in progress, then:
 $FirmwareUpdateApplicable.ver -eq $FirmwareVersion
 	{
 		un-suspend BitLocker.
-		Set-HPBIOSSettingValue -Name "Minimum BIOS Version" -Value $FirmwareVersion
-		Set-HPBIOSSettingValue -Name "Automatic BIOS Update Setting" -Value "Disable"
+		Set-HPBIOSSettingValue -Password ([System.Net.NetworkCredential]::new('', $FirmwarePassword).Password) `
+			-Name "Minimum BIOS Version" -Value $FirmwareVersion
+		Set-HPBIOSSettingValue -Password ([System.Net.NetworkCredential]::new('', $FirmwarePassword).Password) `
+			-Name "Automatic BIOS Update Setting" -Value "Disable"
 		if BIOS password is blank/unset, then:
 			if asset tag begins with 033, then:
 				set BIOS password
@@ -52,4 +59,3 @@ $FirmwareUpdateApplicable.ver -eq $FirmwareVersion
 
 
 
-$FirmwareSettings = Get-HPBIOSSettingsList
