@@ -7,3 +7,6 @@
 [submodule "MayflowerAPI"]
 	path = MayflowerAPI
 	url = git@github.com:MayflowerIT/WindowsAPI.git
+[submodule "PrivateData"]
+	path = PrivateData
+	url = git@github.com:MayflowerIT/PrivateData.git
