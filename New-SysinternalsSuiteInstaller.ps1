@@ -31,13 +31,14 @@
 # // Purpose:   PowerShell Script to generate an INF file that installs the 
 # //            Sysinternals Suite.
 # //
-$scriptVersion = "1.1.0"
+$scriptVersion = "1.2.0"
 # //
 # // Revisions:
 # // ----------
 # // 1.0.0   10/27/2010   Created script.
 # // 1.0.1   06/20/2012   Patched script to work with current webpage.
 # // 1.1.0   07/22/2018   Forked by John Pell: use HTTPS, use PS3.0 feautres.
+# // 1.2.0   04/03/2021   Update by John Pell: Fix parsing of date from web page.
 # //***************************************************************************
 
 
@@ -58,9 +59,9 @@ function Extract-Zip
 $scriptPath = $pwd # $PSScriptRoot
 
 $uriZipFile = "https://download.sysinternals.com/files/SysinternalsSuite.zip"
-$uriWebPage = "https://technet.microsoft.com/en-us/sysinternals/bb842062.aspx"
-#$uriWebPage = "https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite"
-$regexPattern = "\w*?Updated: (.*?)<br>"
+#$uriWebPage = "https://technet.microsoft.com/en-us/sysinternals/bb842062.aspx"
+$uriWebPage = "https://docs.microsoft.com/en-us/sysinternals/downloads/sysinternals-suite"
+$regexPattern = "\w*?Updated: (.*?)</p>"
 $userAgent = "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)"
 
 
