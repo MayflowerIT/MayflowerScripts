@@ -4,29 +4,6 @@ New-Variable -Option Constant -Name DDCP  -Value "{6AC1786C-016F-11D2-945F-00C04
 
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
 
-
-$gW = 
-@{
-	AllNodes = 
-	@(
-		@{
-			NodeName = "*" # not a wildcard; hard-coded "all nodes"
-			
-		},
-		@{
-			NodeName	= "MAKMD",
-			DistinguishedName = "DC=AlbertMakMD,DC=net",
-			DomainDNSName = "AlbertMakMD.net",
-			
-			Role		= "ADDSDC"
-		}
-	);
-	NonNodeData = 
-	@{
-		ConfigFileContents = ""
-	};
-}
-
 Configuration gW
 {
     #Param
@@ -65,8 +42,11 @@ Configuration gW
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
-    Node $AllNodes.Where{$_.Role -eq "ADDSDC"}.NodeName
+    Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
+        $DomainDNSName = $Node.DomainNameComponents -join "."
+        $DomainDN = "DC="+ ($Node.DomainNameComponents -join ",DC=")
+
         xService RslService
         { 
             Name = $RslService
@@ -79,10 +59,21 @@ Configuration gW
             DependsOn = "[Script]RslVersion","[Script]RslJson","[xRemoteFile]RslBin"
         }
 
+        ADDSDNS DNS
+        {
+            DependsOn = "[WindowsFeature]ADDS"
+        }
+
+        ADDSDC NTDS
+        {
+            DependsOn = "[NetDeploy]NetDeploy"
+        }
+
         Service DNS
         {
             Name = "DNS"
             State = "Running"
+            StartupType = "Automatic"
 
             DependsOn = "[WindowsFeature]DNS","[Service]NTDS"
         }
@@ -91,6 +82,7 @@ Configuration gW
         {
             Name = "NTDS"
             State = "Running"
+            StartupType = "Automatic"
 
             DependsOn = "[WindowsFeature]ADDS"
         }
@@ -101,7 +93,7 @@ Configuration gW
             EffectiveTime = '5/1/2018 00:00'
             AllowUnsafeEffectiveTime = $true
 
-            DependsOn = "[WindowsFeature]ADDS" # and also must be a DC
+            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
         }
 
         WindowsFeature ADDS
@@ -112,7 +104,7 @@ Configuration gW
             DependsOn = "[MsiPackage]NetDeploy"
         }
 
-        WindowsFeature ADDS-RSAT
+        WindowsFeature ADDSt
         {
             Name = "RSAT-AD-PowerShell"
             Ensure = "Present"
@@ -126,7 +118,7 @@ Configuration gW
             DependsOn = "[WindowsFeature]ADDS"
         }
 
-        #WindowsFeature DNS-RSAT
+        #WindowsFeature DNSt
         #{
         #    Name = "RSAT-DNS-Server"
         #    Ensure = "Present"
@@ -151,7 +143,7 @@ Configuration gW
                     }
                     else
                     { return $true }
-                } else { return $true }
+                } else { return $false }
                 }
         }
 
@@ -168,7 +160,7 @@ Configuration gW
                 # Check if exists with minimum values; $true = already set; $false = needs SetScript 
                 Test-Path -PathType Leaf -Path $using:RslJson
                 }
-            DependsOn = "[File]RslPath","[Script]RslVersion","[Service]NTDS"
+            DependsOn = "[File]RslPath" #,"[Script]RslVersion"
         }
 
         File RslPath
@@ -259,6 +251,7 @@ if (!(Get-Command Get-AutomationVariable -ErrorAction SilentlyContinue | Out-Nul
 	
 	Import-AzAutomationDscConfiguration -SourcePath $PSCommandPath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -Published
 
+    Import-PowerShellDataFile -Path "$PSScriptRoot\gWdsc.psd1"
 	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gW
 	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'MyNodeConfiguration' -Path 'C:\MyConfigurations\TestVM1.mof'
 }
