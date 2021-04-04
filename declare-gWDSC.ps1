@@ -13,7 +13,7 @@ Configuration gW
 
     $OPSINSIGHTS_WS_ID  = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"
     $OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"
-    $OPSINSIGHTS_PID    = Get-AutomationVariable -Name "OPSINSIGHTS_PID" # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" # 
+    $OPSINSIGHTS_PID    = Get-AutomationVariable -Name "OPSINSIGHTS_PID" # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" #
 
     $OIPackageLocalPath = Join-Path $SystemSixteen "MMASetup-AMD64.exe"
 
@@ -251,8 +251,8 @@ if (!(Get-Command Get-AutomationVariable -ErrorAction SilentlyContinue | Out-Nul
 	
 	Import-AzAutomationDscConfiguration -SourcePath $PSCommandPath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -Published
 
-    Import-PowerShellDataFile -Path "$PSScriptRoot\gWdsc.psd1"
-	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gW
+    $gWdc = Import-PowerShellDataFile -Path "$PSScriptRoot\PrivateData\gWdsc.psd1"
+	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gWdc
 	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'MyNodeConfiguration' -Path 'C:\MyConfigurations\TestVM1.mof'
 }
 
