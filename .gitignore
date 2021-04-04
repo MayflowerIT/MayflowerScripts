@@ -360,3 +360,12 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+
+# MayflowerScripts
+MSUs
+Uninstallers
+Installers
+RENDOM.work
+KMS
+Archived Scripts
