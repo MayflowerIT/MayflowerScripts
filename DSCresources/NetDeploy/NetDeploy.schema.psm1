@@ -1,9 +1,10 @@
 ﻿#Requires -RunAsAdministrator
 
-$hamachiMSI = "hamachi.msi"
-$hamachiURI = "https://secure.logmein.com/$HamachiMSI"
+Param(
+    [switch] $Online = $false
+)
 
-#Import-Module -Name xPSDesiredStateConfiguration
+New-Variable -Name System16 -Option Constant -Value (Join-Path $ENV:SystemRoot "System")
 
 Configuration Hamachi
 {   Param(
@@ -11,29 +12,21 @@ Configuration Hamachi
         [String] $DeployId
     )
 
-    Import-DscResource -ModuleName "PSDesiredStateConfiguration"
-
-$hamachiMSI = "hamachi.msi"
-$hamachiURI = "https://secure.logmein.com/$HamachiMSI"
-
-#    xRemoteFile Hamachi
- #   {
-  #      DestinationPath = (Join-Path (Join-Path $ENV:SystemRoot "System") $hamachiMSI)
-   #     Uri = $hamachiURI
-    #}
+    Import-DscResource -ModuleName PSDesiredStateConfiguration # PSDscResources
 
     Package Hamachi
     {
         ProductId = ''
         Name = "LogMeIn Hamachi"
-        Path = $hamachiURI
-        Arguments = "DEPLOYID=$DeployId"
+        Path = "https://secure.logmein.com/hamachi.msi"
+        Arguments = "/qn DEPLOYID=$DeployId"
     }
 
     Import-DscResource -ModuleName NetworkingDsc
 
     NetAdapterName Hamachi
     {
+        DependsOn = "[Package]Hamachi"
         NewName = "Hamachi"
         DriverDescription = "LogMeIn Hamachi Virtual Ethernet Adapter"
     }
@@ -111,7 +104,6 @@ Configuration IT
             InterfaceAlias = "Hamachi"
             ConnectionSpecificSuffix = "Mayflower.IT"
             RegisterThisConnectionsAddress = $false
-    
         }
 
         NetBios Hamachi
@@ -119,11 +111,18 @@ Configuration IT
             DependsOn = "[DnsConnectionSuffix]IT"
             InterfaceAlias = "Hamachi"
             Setting = "Disable"
-        }
-    }
+}   }   }
+
+if($false -ne $Online)
+{
+    Set-Location -Path $System16
+    IT -ComputerName 'localhost'
+    Start-DscConfiguration -Path "IT" -Wait -Verbose
 }
 
-
+if($false){
+$hamachiMSI = "hamachi.msi"
+$hamachiURI = "https://secure.logmein.com/$HamachiMSI"
 
 Invoke-WebRequest -uri $hamachiURI -OutFile $hamachiMSI 
 
@@ -138,4 +137,4 @@ Remove-NetRoute -InterfaceAlias Hamachi -DestinationPrefix ::/0 -confirm:$false 
 Get-DNSClientNRPTRule | Remove-DNSClientNRPTRule -Force
 Add-DNSClientNRPTRule -NameServers "25.19.19.115","25.17.102.96" -Namespace  "Mayflower.IT" -Verbose
 Add-DNSClientNRPTRule -NameServers "25.19.19.115","25.17.102.96" -Namespace ".Mayflower.IT" -Verbose
-
+}
