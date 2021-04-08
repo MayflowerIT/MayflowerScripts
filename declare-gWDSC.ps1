@@ -1,8 +1,14 @@
-﻿# Desired State for Managed Servers by Mayflower
+﻿<#
+.Description
+Desired State for Managed Servers by Mayflower
+#>
 New-Variable -Option Constant -Name DDP   -Value "{31B2F340-016D-11D2-945F-00C04FB984F9}"
 New-Variable -Option Constant -Name DDCP  -Value "{6AC1786C-016F-11D2-945F-00C04FB984F9}"
 
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
+
+Install-Module -Scope AllUsers -Name PSDscResources,xPSDesiredStateConfiguration,ActiveDirectoryDsc
+Import-Module -Name MayflowerScripts -ErrorAction STOP
 
 Configuration gW
 {
@@ -41,6 +47,8 @@ Configuration gW
     Import-DscResource -ModuleName MMAgent # Composite Resource
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
+
+    Import-DscResource -ModuleName MayflowerScripts
 
     Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
