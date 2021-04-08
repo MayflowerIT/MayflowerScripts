@@ -9,5 +9,5 @@ taskkill /im FujiSynapseBridge.exe /f
 taskkill /im explorer.exe
 taskkill /im explorer.exe /f
 
-ping -n 1 -w 1000 127.0.0.1
+ping -n 2 127.0.0.1
 start "Windows Explorer" explorer.exe
