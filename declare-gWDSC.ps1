@@ -67,15 +67,15 @@ Configuration gW
             DependsOn = "[Script]RslVersion","[Script]RslJson","[xRemoteFile]RslBin"
         }
 
-        ADDSDNS DNS
-        {
-            DependsOn = "[WindowsFeature]ADDS"
-        }
+#        ADDSDNS DNS
+ #       {
+  #          DependsOn = "[WindowsFeature]ADDS"
+   #     }
 
-        ADDSDC NTDS
-        {
-            DependsOn = "[NetDeploy]NetDeploy"
-        }
+#        ADDSDC NTDS
+ #       {
+  #          DependsOn = "[NetDeploy]NetDeploy"
+   #     }
 
         Service DNS
         {
