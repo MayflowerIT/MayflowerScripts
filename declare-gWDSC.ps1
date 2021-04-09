@@ -48,7 +48,7 @@ Configuration gW
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
-    Import-DscResource -ModuleName MayflowerScripts
+    #Import-DscResource -ModuleName MayflowerScripts
 
     Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
