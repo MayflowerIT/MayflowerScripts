@@ -4,7 +4,7 @@
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope AllUsers 
+#Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Scope AllUsers 
 #-Force
 Register-PSRepository -Default -InstallationPolicy Trusted -ErrorAction SilentlyContinue # Only needed if something gets corrupted...
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted -ErrorAction STOP
