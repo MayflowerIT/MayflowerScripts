@@ -44,7 +44,7 @@ Configuration gW
     Import-DscResource -ModuleName xPSDesiredStateConfiguration # M$-preview, extra features without support
     Import-DscResource -ModuleName PSDscResources # M$-supported, replaces in-box PSDesiredStateConfiguration
 
-    Import-DscResource -ModuleName MMAgent # Composite Resource
+    Import-DscResource -ModuleName OMSagent # Composite Resource
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
@@ -198,7 +198,7 @@ Configuration gW
             Arguments = "/qn DEPLOYID=" + $NetDeployID
         }
 
-        MMAgent OMSnode
+        OMSagent OMSnode
         {
             OPSINSIGHTS_PID    = $OPSINSIGHTS_PID
             OPSINSIGHTS_WS_ID  = $OPSINSIGHTS_WS_ID
@@ -215,7 +215,7 @@ Configuration gW
 
     Node OMSnode
     { # *just* logging...
-        MMAgent OMSnode
+        OMSagent OMSnode
         {
             OPSINSIGHTS_PID    = $OPSINSIGHTS_PID
             OPSINSIGHTS_WS_ID  = $OPSINSIGHTS_WS_ID
