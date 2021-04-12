@@ -66,7 +66,7 @@
     AliasesToExport = @()
     
     # DSC resources to export from this module
-    DscResourcesToExport = @('OMSagent')
+    DscResourcesToExport = @('OMSagent','NetDeploy')
     
     # List of all modules packaged with this module
     # ModuleList = @()
