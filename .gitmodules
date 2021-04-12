@@ -2,7 +2,7 @@
 	path = MayflowerSync
 	url = git@github.com:MayflowerIT/MayflowerSync.git
 [submodule "DSCresources/MMAgent"]
-	path = DSCresources/MMAgent
+	path = DSCresources/OMSagent
 	url = git@github.com:MayflowerIT/MMAgent.git
 [submodule "MayflowerAPI"]
 	path = MayflowerAPI
