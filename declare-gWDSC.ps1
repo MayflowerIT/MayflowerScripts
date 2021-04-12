@@ -1,5 +1,5 @@
 ﻿Param(
-    $Online = $false
+    [Switch]$Online = $false
 )
 <#
 .Description
