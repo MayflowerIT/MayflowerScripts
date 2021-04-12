@@ -47,7 +47,7 @@ Configuration gW
     Import-DscResource -ModuleName xPSDesiredStateConfiguration # M$-preview, extra features without support
     Import-DscResource -ModuleName PSDscResources # M$-supported, replaces in-box PSDesiredStateConfiguration
 
-    Import-DscResource -ModuleName OMSagent # Composite Resource
+    Import-DscResource -Name OMSagent # Composite Resource
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
