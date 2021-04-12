@@ -1,6 +1,6 @@
-﻿Param(
-    [Switch]$Online = $false
-)
+﻿#Param(
+#    [Switch]$Online = $false
+#)
 <#
 .Description
 Desired State for Managed Servers by Mayflower
