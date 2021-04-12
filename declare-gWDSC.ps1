@@ -47,7 +47,7 @@ Configuration gW
     Import-DscResource -ModuleName xPSDesiredStateConfiguration # M$-preview, extra features without support
     Import-DscResource -ModuleName PSDscResources # M$-supported, replaces in-box PSDesiredStateConfiguration
 
-    Import-DscResource -Name OMSagent # Composite Resource
+    Import-DscResource -ModuleName MayflowerScripts # Composite Resources
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
@@ -251,7 +251,7 @@ Configuration gW
     }
 }
 
-if (!(Get-Command Get-AutomationVariable -ErrorAction SilentlyContinue | Out-Null))
+if ($Online -eq $true)
 {
 	Install-Module -Scope AllUsers -Name Az
 	Connect-AzAccount
