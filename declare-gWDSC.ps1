@@ -47,14 +47,14 @@ Configuration gW
     Import-DscResource -ModuleName xPSDesiredStateConfiguration # M$-preview, extra features without support
     Import-DscResource -ModuleName PSDscResources # M$-supported, replaces in-box PSDesiredStateConfiguration
 
-    Import-DscResource -ModuleName MayflowerScripts -Name OMSagent # Composite Resources
+    Import-DscResource -ModuleName MayflowerScripts -Name OMSagent # Composite Resource
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
 
     Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
-        $DomainDNSName = $Node.DomainNameComponents -join "."
-        $DomainDN = "DC="+ ($Node.DomainNameComponents -join ",DC=")
+        $DomainNameComponents = $Node.DNSName.Split(".")
+        $DomainDN = "DC="+ ($DomainNameComponents -join ",DC=")
 
         xService RslService
         { 
@@ -71,12 +71,22 @@ Configuration gW
 #        ADDSDNS DNS
  #       {
   #          DependsOn = "[WindowsFeature]ADDS"
+#ensure zone exists, that AD SRV sub-zones exist as zones, &c
+#ensure that local DNS server is configured to serve it's static IP, not any others
    #     }
 
 #        ADDSDC NTDS
  #       {
   #          DependsOn = "[NetDeploy]NetDeploy"
+#ensure domain `description' is set to company name
+#ensure domain `managedBy' is set to EAs
+#ensure domain built-in Administrators is: built-in Administrator, DAs, EAs, EDCs
    #     }
+# How do AD Sites/Subnets related to DHCP Scopes?
+#ADDSDHCP
+#{
+#ensure scopes exist, DCs have DHCP, set to sync relationship, &c.
+#}
 
         Service DNS
         {
@@ -260,8 +270,8 @@ if ($Online -eq $true)
 	
 	Import-AzAutomationDscConfiguration -SourcePath $PSCommandPath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -Published
 
-    $gWdc = Import-PowerShellDataFile -Path "$PSScriptRoot\PrivateData\gWdsc.psd1"
-	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gWdc
+    $gWdsc = Import-PowerShellDataFile -Path "$PSScriptRoot\PrivateData\gWadds.psd1"
+	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gWdsc
 	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'MyNodeConfiguration' -Path 'C:\MyConfigurations\TestVM1.mof'
 }
 
