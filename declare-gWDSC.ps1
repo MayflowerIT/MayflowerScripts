@@ -1,4 +1,7 @@
-﻿<#
+﻿Param(
+    $Online = $false
+)
+<#
 .Description
 Desired State for Managed Servers by Mayflower
 #>
