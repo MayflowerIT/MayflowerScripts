@@ -1,4 +1,45 @@
-﻿#Requires -RunAsAdministrator
+
+<#PSScriptInfo
+
+.VERSION 1.0
+
+.GUID d78d50d5-52bf-4908-a44a-0f8bc989c921
+
+.AUTHOR John D Pell
+
+.COMPANYNAME Mayflower IS&T
+
+.COPYRIGHT (c) gaelicWizard.LLC. All Rights Reserved.
+
+.TAGS
+
+.LICENSEURI
+
+.PROJECTURI
+
+.ICONURI
+
+.EXTERNALMODULEDEPENDENCIES 
+
+.REQUIREDSCRIPTS
+
+.EXTERNALSCRIPTDEPENDENCIES
+
+.RELEASENOTES
+
+
+.PRIVATEDATA
+
+#>
+
+<# 
+
+.DESCRIPTION 
+ Configures visibility of network adapters 
+
+#> 
+
+#Requires -RunAsAdministrator
 Param(
     [Switch]$Online = $false
 )
