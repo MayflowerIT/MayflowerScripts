@@ -99,7 +99,37 @@ Configuration gW
             Ensure= 'Present'
             MembersToInclude= 'S-1-5-9'
 
-            DependsOn = "[Service]NTDS"
+            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
+        }
+
+        ADManagedServiceAccount AGPM
+        {
+            ServiceAccountName = 'AGPM'
+            AccountType = 'Group'
+            DisplayName = 'Advanced Group Policy Management'
+            #Description = ""
+
+            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
+        }
+
+        Group AGPM
+        {
+            GroupName= "Group Policy Creator Owners"
+            MembersToInclude = 'AGPM'
+
+            DependsOn = "[ADManagedServiceAccount]AGPM"
+        }
+
+        ADManagedServiceAccount AADC
+        {
+            ServiceAccountName = 'AADC'
+            AccountType = 'Group'
+            DisplayName = 'Azure Active Directory Connect'
+            #Description = ""
+
+            ManagedPasswordPrincipals = 'S-1-5-9'
+
+            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
         }
 
         xDnsServerConditionalForwarder IT
