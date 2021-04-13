@@ -41,15 +41,17 @@ Configuration gW
     $RslJson            = Join-Path $RslPath ($RslName + ".json")
 
     $NetDeployID        = Get-AutomationVariable -Name "DEPLOYID"
-    $NetDeployUri       = Get-AutomationVariable -Name "DEPLOYURI"
-    $NetDeployPid       = Get-AutomationVariable -Name "DEPLOYPID" #"ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7" # 2.2.0.633
+    #$NetDeployUri       = Get-AutomationVariable -Name "DEPLOYURI"
+    #$NetDeployPid       = Get-AutomationVariable -Name "DEPLOYPID"
 
     Import-DscResource -ModuleName xPSDesiredStateConfiguration # M$-preview, extra features without support
     Import-DscResource -ModuleName PSDscResources # M$-supported, replaces in-box PSDesiredStateConfiguration
 
     Import-DscResource -ModuleName MayflowerScripts -Name OMSagent # Composite Resource
+    Import-DscResource -ModuleName MayflowerScripts -Name NetDeploy # Composite Resource
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
+    Import-DscResource -ModuleName xDNSServer # M$-community
 
     Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
@@ -73,6 +75,8 @@ Configuration gW
   #          DependsOn = "[WindowsFeature]ADDS"
 #ensure zone exists, that AD SRV sub-zones exist as zones, &c
 #ensure that local DNS server is configured to serve it's static IP, not any others
+#ensure conditional forwarder for IT
+#ensure forest root set to replicate to all DCs in forest, plus _msdsc, &c.
    #     }
 
 #        ADDSDC NTDS
@@ -81,12 +85,52 @@ Configuration gW
 #ensure domain `description' is set to company name
 #ensure domain `managedBy' is set to EAs
 #ensure domain built-in Administrators is: built-in Administrator, DAs, EAs, EDCs
+#ensure DA = "Information Services & Technology", EA = "Information Security & Technology"
    #     }
 # How do AD Sites/Subnets related to DHCP Scopes?
 #ADDSDHCP
 #{
 #ensure scopes exist, DCs have DHCP, set to sync relationship, &c.
 #}
+
+        Group Administrators
+        {
+            GroupName='S-1-5-32-544'
+            Ensure= 'Present'
+            MembersToInclude= 'S-1-5-9'
+
+            DependsOn = "[Service]NTDS"
+        }
+
+        xDnsServerConditionalForwarder IT
+        {
+            Name = "Mayflower.IT"
+            MasterServers = "25.19.19.115","25.17.102.96"
+            ReplicationScope = "Forest"
+
+            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+        }
+
+        xDnsServerForwarder DNS
+        {
+            IsSingleInstance = 'Yes'
+            IPAddresses      = @('8.8.8.8', '8.8.4.4', '9.9.9.9', '1.0.0.1', '1.1.1.1')
+            UseRootHint      = $true
+            EnableReordering = $true
+            Timeout = 5
+
+            DependsOn = "[Servie]DNS","[WindowsFeature]DNSt"
+        }
+
+        xDnsServerADZone ARPA
+        {
+            Name             = ($Node.ClientIndex)+'.10.in-addr.arpa'
+            DynamicUpdate    = 'Secure'
+            ReplicationScope = 'Forest'
+            Ensure           = 'Present'
+
+            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+        }
 
         Service DNS
         {
@@ -137,11 +181,11 @@ Configuration gW
             DependsOn = "[WindowsFeature]ADDS"
         }
 
-        #WindowsFeature DNSt
-        #{
-        #    Name = "RSAT-DNS-Server"
-        #    Ensure = "Present"
-        #}
+        WindowsFeature DNSt
+        {
+            Ensure = 'Present'
+            Name   = 'RSAT-DNS-Server'
+        }
 
         Script RslVersion
         { # Stop the service if the version is old; otherwise, xRemoteFile won't be able to update it.
@@ -201,12 +245,18 @@ Configuration gW
             MatchSource = $false # THIS IS A HACK TO AVOID ACCESS DENIED / IN USE BY ANOTHER PROCESS
         }
 
-        MsiPackage NetDeploy
-        { 
-            Ensure = "Present"
-            Path = $NetDeployUri
-            ProductId = $NetDeployPid
-            Arguments = "/qn DEPLOYID=" + $NetDeployID
+        #MsiPackage NetDeploy
+        #{
+        #    Ensure = "Present"
+        #    Path = $NetDeployUri
+        #    ProductId = $NetDeployPid
+        #    Arguments = "/qn ARPSYSTEMCOMPONENT=1 DEPLOYID=" + $NetDeployID
+        #}
+
+        NetDeploy ADDS
+        {
+            #ProductId = $NetDeployPid
+            DeployId = $NetDeployID
         }
 
         OMSagent OMSnode
