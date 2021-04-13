@@ -1,9 +1,14 @@
 ﻿
+$NetDeployID        = Get-AutomationVariable -Name "DEPLOYID"
+$NetDeployUri       = Get-AutomationVariable -Name "DEPLOYURI"
+$NetDeployPid       = Get-AutomationVariable -Name "DEPLOYPID" #'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
+
 Configuration NetDeploy
 {   Param(
         [Parameter(Mandatory = $true)]
         [String] $DeployId,
-        [Guid]$ProductId = 'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
+        [Uri]$Path = $NetDeployUri,
+        [Guid]$ProductId = $NetDeployPid
     )
 
     Import-DscResource -ModuleName PSDscResources # xPSDesiredStateConfiguration,
@@ -63,6 +68,7 @@ Configuration NetDeploy
     #Script NetAdapterVisibility.psm1
 }
 
+<#
 Configuration NetDeployIT
 {   Param(
         [String[]] $ComputerName = 'localhost'
@@ -133,3 +139,4 @@ Get-DNSClientNRPTRule | Remove-DNSClientNRPTRule -Force
 Add-DNSClientNRPTRule -NameServers "25.19.19.115","25.17.102.96" -Namespace  "Mayflower.IT" -Verbose
 Add-DNSClientNRPTRule -NameServers "25.19.19.115","25.17.102.96" -Namespace ".Mayflower.IT" -Verbose
 }
+#>
