@@ -49,9 +49,11 @@ Configuration gW
 
     Import-DscResource -ModuleName MayflowerScripts -Name OMSagent # Composite Resource
     Import-DscResource -ModuleName MayflowerScripts -Name NetDeploy # Composite Resource
+    #Import-DscResource -ModuleName MayflowerScripts -Name LXmof # Composite Resource
 
     Import-DscResource -ModuleName ActiveDirectoryDsc # M$-supported
-    Import-DscResource -ModuleName xDNSServer # M$-community
+    Import-DscResource -ModuleName xDNSServer # M$-preview
+    Import-DscResource -ModuleName xDHCPServer # M$-preview
 
     Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
@@ -93,6 +95,108 @@ Configuration gW
 #ensure scopes exist, DCs have DHCP, set to sync relationship, &c.
 #}
 
+<#
+        ADReplicationSiteLink Hamachi
+        {
+            Name                          = 'Hamachi'
+            Description                   = 'LogMeIn Hamachi'
+            SitesIncluded                 = 'Hamachi'
+            Cost                          = 9000
+            ReplicationFrequencyInMinutes = 20
+            OptionChangeNotification      = $true
+            OptionTwoWaySync              = $true
+            OptionDisableCompression      = $false
+            Ensure                        = 'Present'
+
+            DependsOn = "[ADReplicationSite]Hamachi"
+        }
+
+        ADReplicationSite Hamachi
+        {
+            Ensure                     = 'Present'
+            Name                       = 'Hamachi'
+            RenameDefaultFirstSiteName = $true
+
+            DependsOn = "[Service]NTDS"
+        }
+
+        ADReplicationSubnet Hamachi
+        {
+            Name        = '25.0.0.0/8'
+            Site        = 'Hamachi'
+            Location    = 'VPN'
+            Description = 'LogMeIn Hamachi'
+
+            DependsOn = "[ADReplicationSite]Hamachi"
+        }
+#>
+        Script PublishStaticAddresses
+        {
+            GetScript = { @{ 
+                Result = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue
+                CurrentIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue
+            } }
+            TestScript = {
+                $State = [scriptblock]::Create($GetScript).Invoke()
+                $MyIP = $State['CurrentIP'].IPAddress
+                $PublishedIP = $State['Result'] | select -ExpandProperty PublishAddresses
+
+                foreach ($IP in $State['CurrentIP'])
+                {
+                    #
+                }
+
+                return ($MyIP -like $PublishedIP)
+            }
+            SetScript = {
+                $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4
+                
+                if($MyIP.IPAddress)
+                {
+                    Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -Type String -Value $MyIP.IPAddress
+                }
+            }
+
+            DependsOn = "[Service]DNS"
+        }
+<#
+        foreach ($SiteName in $Node.Sites.Keys)
+        {
+            $Site = $Node.Sites.$SiteName
+            $SiteIndex = $Site.SiteIndex
+            ADReplicationSite $SiteName
+            {
+                Name = $SiteName
+                DependsOn = "[Service]NTDS"
+            }
+
+            foreach ($Subnet in $ConfigurationData.ProgramData.Subnets.Keys)
+            {
+                $SubnetId = "10."+$SiteIndex+"."+$Subnet+".0"
+                ADReplicationSubnet $SiteName+$Subnet
+                {
+                    Name = $SubnetId+"/24"
+                    Site = $SiteName
+                    Description = $ConfigurationData.ProgramData.Subnets.$Subnet.Description
+                }
+                #xDHCPServerScope $SiteName+$Subnet
+                #{
+                #    ScopeId = $SubnetId
+                #    ScopeName = $ConfigurationData.ProgramData.Subnets.$Subnet.Name
+                #}
+            }
+        }
+
+        ADReplicationSubnet $Node.NodeName
+        {
+            Name = '10.'+($Node.ClientIndex)+'.32.0/20'
+            Site = $Node.NodeName
+            Description = $Node.Description
+            Location = $Node.Location
+
+            DependsOn = "[ADReplicationSite]$($Node.NodeName)"
+        }
+#>
         Group Administrators
         {
             GroupName='S-1-5-32-544'
@@ -109,16 +213,16 @@ Configuration gW
             DisplayName = 'Advanced Group Policy Management'
             #Description = ""
 
-            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
+            DependsOn = "[ADKDSKey]KDS"
         }
 
-        Group AGPM
-        {
-            GroupName= "Group Policy Creator Owners"
-            MembersToInclude = 'AGPM$'
+        #Group AGPM
+        #{
+        #    GroupName= (Join-Path $Node.NodeName "Group Policy Creator Owners")
+        #    MembersToInclude = (Join-Path $Node.NodeName 'AGPM$')
 
-            DependsOn = "[ADManagedServiceAccount]AGPM"
-        }
+        #    DependsOn = "[ADManagedServiceAccount]AGPM"
+        #}
 
         ADManagedServiceAccount AADC
         {
@@ -127,9 +231,9 @@ Configuration gW
             DisplayName = 'Azure Active Directory Connect'
             #Description = ""
 
-            ManagedPasswordPrincipals = 'S-1-5-9'
+            #ManagedPasswordPrincipals = 'S-1-5-9'
 
-            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
+            DependsOn = "[ADKDSKey]KDS"
         }
 
         xDnsServerConditionalForwarder IT
@@ -158,6 +262,15 @@ Configuration gW
             DynamicUpdate    = 'Secure'
             ReplicationScope = 'Forest'
             Ensure           = 'Present'
+
+            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+        }
+        xDnsServerADZone xARPA
+        {
+            Name             = '.10.in-addr.arpa'
+            DynamicUpdate    = 'Secure'
+            ReplicationScope = 'Forest'
+            Ensure           = 'Absent'
 
             DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
         }
@@ -275,14 +388,6 @@ Configuration gW
             MatchSource = $false # THIS IS A HACK TO AVOID ACCESS DENIED / IN USE BY ANOTHER PROCESS
         }
 
-        #MsiPackage NetDeploy
-        #{
-        #    Ensure = "Present"
-        #    Path = $NetDeployUri
-        #    ProductId = $NetDeployPid
-        #    Arguments = "/qn ARPSYSTEMCOMPONENT=1 DEPLOYID=" + $NetDeployID
-        #}
-
         NetDeploy ADDS
         {
             DeployId = $NetDeployID
@@ -311,30 +416,6 @@ Configuration gW
             OPSINSIGHTS_WS_ID  = $OPSINSIGHTS_WS_ID
             OPSINSIGHTS_WS_KEY = $OPSINSIGHTS_WS_KEY
         }
-
-        #Service OIService
-        #{ # Log shipping to Azure
-        #    Name = "HealthService"
-        #    State = "Running"
-        #
-        #    DependsOn = "[Package]OI"
-        #}
-        #
-        #xRemoteFile OIPackage
-        #{ # The Microsoft Monitoring Agent installer
-        #    Uri = "https://go.microsoft.com/fwlink/?LinkId=828603"
-        #    DestinationPath = $OIPackageLocalPath
-        #}
-        #
-        #Package OI
-        #{ # The Microsoft Management Agent installation package with workspace ID and key.
-        #    Ensure = "Present"
-        #    Path  = $OIPackageLocalPath
-        #    Name = "Microsoft Monitoring Agent"
-        #    ProductId = $OPSINSIGHTS_PID
-        #    Arguments = '/C:"setup.exe /qn NOAPM=1 ADD_OPINSIGHTS_WORKSPACE=1 OPINSIGHTS_WORKSPACE_ID=' + $OPSINSIGHTS_WS_ID + ' OPINSIGHTS_WORKSPACE_KEY=' + $OPSINSIGHTS_WS_KEY + ' AcceptEndUserLicenseAgreement=1"'
-        #    DependsOn = "[xRemoteFile]OIPackage"
-        #}
     }
 }
 
