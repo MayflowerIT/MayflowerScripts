@@ -5,7 +5,7 @@
     # RootModule = ''
     
     # Version number of this module.
-    ModuleVersion = '0.6.0'
+    ModuleVersion = '0.6.1'
     
     # ID used to uniquely identify this module
     GUID = '7f189a65-2fc1-4970-b864-266b8aadff29'
@@ -25,26 +25,19 @@
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.0'
     
-    # Processor architecture (None, X86, Amd64) required by this module
-    # ProcessorArchitecture = 'Amd64'
-    
     # Modules that must be imported into the global environment prior to importing this module
     # RequiredModules = @()
-    
-    # Assemblies that must be loaded prior to importing this module
-    # RequiredAssemblies = @()
     
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     ScriptsToProcess = @('Update-PowerShellPackageManagement.ps1','Install-MSO365.ps1') #,'Enable-WindowsRSAT.ps1')
     
     # Type files (.ps1xml) to be loaded when importing this module
     # TypesToProcess = @()
-    
     # Format files (.ps1xml) to be loaded when importing this module
     # FormatsToProcess = @()
     
     # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
-    NestedModules = @('MayflowerAPI') #,'MayflowerSync')
+    NestedModules = @('MayflowerAPI', 'NetAdapterVisibility') #,'MayflowerSync')
     
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
     FunctionsToExport = @()
