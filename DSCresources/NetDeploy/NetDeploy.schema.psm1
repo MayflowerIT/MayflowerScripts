@@ -108,7 +108,7 @@ Configuration NetDeployIT
             Setting = "Disable"
 }   }   }
 
-if($false -ne $Online)
+if($true -eq $Online)
 {
     Set-Location -Path $System16
     NetDeployIT -ComputerName 'localhost'
