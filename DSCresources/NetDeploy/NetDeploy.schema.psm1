@@ -20,11 +20,20 @@ Configuration NetDeploy
         Arguments = "/qn ARPSYSTEMCOMPONENT=1 DEPLOYID=$DeployId"
     }
 
+    Service Hamachi
+    {
+        Name = "Hamachi2Svc"
+        StartupType = 'Automatic'
+        State = 'Running'
+
+        DependsOn = "[MsiPackage]Hamachi"
+    }
+
     Import-DscResource -ModuleName NetworkingDsc
 
     NetAdapterName Hamachi
     {
-        DependsOn = "[MsiPackage]Hamachi"
+        DependsOn = "[Service]Hamachi"
         NewName = "Hamachi"
         DriverDescription = "LogMeIn Hamachi Virtual Ethernet Adapter"
     }
