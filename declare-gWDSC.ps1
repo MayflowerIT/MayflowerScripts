@@ -134,19 +134,21 @@ Configuration gW
         {
             GetScript = { @{ 
                 Result = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue
-                CurrentIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue
+                CurrentIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 
             } }
             TestScript = {
                 $State = [scriptblock]::Create($GetScript).Invoke()
-                $MyIP = $State['CurrentIP'].IPAddress
-                $PublishedIP = $State['Result'] | select -ExpandProperty PublishAddresses
+                #$MyIP = $State['CurrentIP'].IPAddress
+                $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 | select -ExpandProperty IPAddress
+                #$PublishedIP = $State['Result'] | select -ExpandProperty PublishAddresses
+                $PublishedIP = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses | select -ExpandProperty PublishAddresses
 
-                foreach ($IP in $State['CurrentIP'])
-                {
+                #foreach ($IP in $State['CurrentIP'])
+                #{
                     #
-                }
+                #}
 
-                return ($MyIP -like $PublishedIP)
+                return ($PublishedIP -like $MyIP)
             }
             SetScript = {
                 $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4
