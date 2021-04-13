@@ -134,14 +134,14 @@ Configuration gW
         {
             GetScript = { @{ 
                 Result = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue
-                CurrentIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 
+                CurrentIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue
             } }
             TestScript = {
                 $State = [scriptblock]::Create($GetScript).Invoke()
                 #$MyIP = $State['CurrentIP'].IPAddress
-                $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 | select -ExpandProperty IPAddress
+                $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue | select -ExpandProperty IPAddress
                 #$PublishedIP = $State['Result'] | select -ExpandProperty PublishAddresses
-                $PublishedIP = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses | select -ExpandProperty PublishAddresses
+                $PublishedIP = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue | select -ExpandProperty PublishAddresses
 
                 #foreach ($IP in $State['CurrentIP'])
                 #{
@@ -157,6 +157,7 @@ Configuration gW
                 {
                     Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -Type String -Value $MyIP.IPAddress
                 }
+                Register-DnsClient
             }
 
             DependsOn = "[Service]DNS"
