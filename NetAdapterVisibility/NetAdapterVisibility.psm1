@@ -2,6 +2,8 @@
 Param(
     [Switch]$Online = $false
 )
+#https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-not-displayed-in-the-user-interface
+#https://community.idera.com/database-tools/powershell/powertips/b/tips/posts/hiding-network-adapter
 
 Function Get-NetAdapterVisibility
 {
