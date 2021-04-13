@@ -115,7 +115,7 @@ Configuration gW
         Group AGPM
         {
             GroupName= "Group Policy Creator Owners"
-            MembersToInclude = 'AGPM'
+            MembersToInclude = 'AGPM$'
 
             DependsOn = "[ADManagedServiceAccount]AGPM"
         }
@@ -149,7 +149,7 @@ Configuration gW
             EnableReordering = $true
             Timeout = 5
 
-            DependsOn = "[Servie]DNS","[WindowsFeature]DNSt"
+            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
         }
 
         xDnsServerADZone ARPA
@@ -285,7 +285,6 @@ Configuration gW
 
         NetDeploy ADDS
         {
-            #ProductId = $NetDeployPid
             DeployId = $NetDeployID
         }
 
@@ -339,7 +338,7 @@ Configuration gW
     }
 }
 
-if ($Online -eq $true)
+if ($true -eq $Online)
 {
 	Install-Module -Scope AllUsers -Name Az
 	Connect-AzAccount
