@@ -1,32 +1,31 @@
 ﻿#Requires -RunAsAdministrator
-
 Param(
     [switch] $Online = $false
 )
 
-New-Variable -Name System16 -Option Constant -Value (Join-Path $ENV:SystemRoot "System")
+#New-Variable -Name System16 -Option Constant -Value (Join-Path $ENV:SystemRoot "System")
 
-Configuration Hamachi
+Configuration NetDeploy
 {   Param(
         [Parameter(Mandatory = $true)]
-        [String] $DeployId
+        [String] $DeployId,
+        [Guid]ProductId = 'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
     )
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration # PSDscResources
 
-    Package Hamachi
+    MsiPackage Hamachi
     {
-        ProductId = ''
-        Name = "LogMeIn Hamachi"
+        ProductId = $ProductId
         Path = "https://secure.logmein.com/hamachi.msi"
-        Arguments = "/qn DEPLOYID=$DeployId"
+        Arguments = "/qn ARPSYSTEMCOMPONENT=1 DEPLOYID=$DeployId"
     }
 
     Import-DscResource -ModuleName NetworkingDsc
 
     NetAdapterName Hamachi
     {
-        DependsOn = "[Package]Hamachi"
+        DependsOn = "[MsiPackage]Hamachi"
         NewName = "Hamachi"
         DriverDescription = "LogMeIn Hamachi Virtual Ethernet Adapter"
     }
@@ -66,23 +65,25 @@ Configuration Hamachi
         InterfaceAlias = "Hamachi"
         AddressFamily = "IPv6"
     }
+
+    #Script NetAdapterVisibility.psm1
 }
 
-Configuration IT
+Configuration NetDeployIT
 {   Param(
         [String[]] $ComputerName = 'localhost'
     )
     Import-DscResource -ModuleName NetworkingDsc
 
     Node $ComputerName {
-        Hamachi IT
+        NetDeploy IT
         {
             DeployID = "o5edsqqak5ddpmjvcev2xnetvl007pbm83kb7397"
         }
 
         DnsServerAddress ITv4
         {
-            DependsOn = "[Hamachi]IT"
+            DependsOn = "[NetDeploy]IT"
             InterfaceAlias = "Hamachi"
             AddressFamily = "IPv4"
             Address = "25.19.19.115","25.17.102.96"
@@ -91,7 +92,7 @@ Configuration IT
     
         DnsServerAddress ITv6
         {
-            DependsOn = "[Hamachi]IT"
+            DependsOn = "[NetDeploy]IT"
             InterfaceAlias = "Hamachi"
             AddressFamily = "IPv6"
             Address = '2620:9b::1913:1373','2620:9b::1911:6660'
@@ -116,8 +117,8 @@ Configuration IT
 if($false -ne $Online)
 {
     Set-Location -Path $System16
-    IT -ComputerName 'localhost'
-    Start-DscConfiguration -Path "IT" -Wait -Verbose
+    NetDeployIT -ComputerName 'localhost'
+    Start-DscConfiguration -Path "NetDeployIT" -Wait -Verbose
 }
 
 if($false){
