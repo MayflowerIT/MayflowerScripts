@@ -148,7 +148,7 @@ Configuration gW
                     #
                 #}
 
-                return ($PublishedIP -like $MyIP)
+                return $false
             }
             SetScript = {
                 $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4
@@ -156,6 +156,7 @@ Configuration gW
                 if($MyIP.IPAddress)
                 {
                     Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -Type String -Value $MyIP.IPAddress
+                    Remove-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name ListenAddresses -ErrorAction SilentlyContinue
                 }
                 Register-DnsClient
             }
