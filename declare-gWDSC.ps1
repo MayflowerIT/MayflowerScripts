@@ -164,7 +164,7 @@ Configuration gW
             Name = "AD-Domain-Services"
             Ensure = "Present"
 
-            DependsOn = "[MsiPackage]NetDeploy"
+            DependsOn = "[NetDeploy]ADDS"
         }
 
         WindowsFeature ADDSt
