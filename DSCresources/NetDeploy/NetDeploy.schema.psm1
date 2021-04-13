@@ -1,5 +1,4 @@
-﻿#Requires -RunAsAdministrator
-Param(
+﻿Param(
     [switch] $Online = $false
 )
 
