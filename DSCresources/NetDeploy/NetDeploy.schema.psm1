@@ -1,14 +1,9 @@
-﻿Param(
-    [switch] $Online = $false
-)
-
-#New-Variable -Name System16 -Option Constant -Value (Join-Path $ENV:SystemRoot "System")
-
+﻿
 Configuration NetDeploy
 {   Param(
         [Parameter(Mandatory = $true)]
         [String] $DeployId,
-        [Guid]ProductId = 'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
+        [Guid]$ProductId = 'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
     )
 
     Import-DscResource -ModuleName PSDesiredStateConfiguration # PSDscResources
