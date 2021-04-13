@@ -148,7 +148,10 @@ Configuration gW
                     #
                 #}
 
-                return $false
+                if (($null -ne "$MyIP") -and ("$MyIP" -like "$PublishedIP"))
+                { return $true }
+                else
+                { return $false }
             }
             SetScript = {
                 $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4
