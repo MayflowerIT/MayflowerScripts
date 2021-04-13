@@ -1,5 +1,11 @@
 ﻿#Requires -Version 3
 
+
+Set-Location (Join-Path $env:SystemRoot "System")
+
+
+
+
 $sysToolsListUri = "https://live.sysinternals.com/tools"
 $commonProgramsSpecialFolder = [environment]::getFolderPath("CommonPrograms")
 
