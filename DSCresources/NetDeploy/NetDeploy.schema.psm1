@@ -6,7 +6,7 @@ Configuration NetDeploy
         [Guid]$ProductId = 'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
     )
 
-    Import-DscResource -ModuleName PSDesiredStateConfiguration # PSDscResources
+    Import-DscResource -ModuleName PSDscResources # xPSDesiredStateConfiguration,
 
     MsiPackage Hamachi
     {
