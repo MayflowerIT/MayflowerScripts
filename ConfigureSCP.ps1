@@ -1,8 +1,49 @@
-﻿#
-# Windows PowerShell script to configure the SCP for Hybrid Azure AD join
-#
+﻿
+<#PSScriptInfo
 
-param([string]$Domain, [switch]$Help)
+.VERSION 1.0
+
+.GUID 1c3815d8-144f-4681-8323-b32bef6965c5
+
+.AUTHOR John D Pell
+
+.COMPANYNAME Mayflower IS&T
+
+.COPYRIGHT Original (c) Microsoft Corporation. Improvements (c) gaelicWizard.LLC.
+
+.TAGS
+
+.LICENSEURI
+
+.PROJECTURI
+
+.ICONURI
+
+.EXTERNALMODULEDEPENDENCIES 
+
+.REQUIREDSCRIPTS
+
+.EXTERNALSCRIPTDEPENDENCIES
+
+.RELEASENOTES
+Original imported from Azure AD Connect Seamless Single Sign-On manual script. 
+
+
+.PRIVATEDATA
+
+#>
+
+<# 
+
+.DESCRIPTION 
+ Windows PowerShell script to configure the SCP for Hybrid Azure AD join 
+
+#> 
+
+Param(
+     [String]$AADDomain, 
+     [Guid]$AADTenant
+)
 
 function funHelp()
 {
@@ -45,7 +86,7 @@ if (-not($Domain))
 Write-Output "Configuring the SCP for Hybrid Azure AD join in your Active Directory forest."
 
 ## Set variables
-$azureADId = "azureADId:02c66ae0-31a8-4bef-85d3-935fbbe5d8e0"
+$azureADId = "azureADId:fc0a1de5-3ce4-4490-9f77-e5b764edcf44"
 $azureADName = "azureADName:" + $Domain
 $keywords = "keywords"
 $ldap = "LDAP://"
