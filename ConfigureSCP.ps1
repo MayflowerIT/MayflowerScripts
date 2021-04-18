@@ -34,15 +34,30 @@ Original imported from Azure AD Connect Seamless Single Sign-On manual script.
 #>
 
 <# 
+.SYNOPSIS
+ Configures the service connection point for Hybrid Azure AD join in the current forest.
 
 .DESCRIPTION 
- Windows PowerShell script to configure the SCP for Hybrid Azure AD join 
+ The ConfigureSCP.ps1 script inspects your on-premises Active Directory Domain Services forest and updates or creates the service connection point for Hybrid Azure AD join and Single Sign-On.
 
+.PARAMETER AADDomain
+ Specifies the original "default" domain used to configure Azure AD, usually <contoso>.onmicrosoft.com.
+
+.PARAMETER AADTenant
+ Specifies the GUID for the Azure AD tenant.
+
+.PARAMETER ADDSForest
+ Specifies the distinguished name for your on-premises Active Directory Domain Services root domain.
 #> 
 
 Param(
+     [Parameter(Mandatory=$true)]
+     [ValidateNotNullOrEmpty()]
      [String]$AADDomain, 
-     [Guid]$AADTenant
+     [Parameter(Mandatory=$true)]
+     [ValidateNotNullOrEmpty()]
+     [Guid]$AADTenant,
+     [String]$ADDSForest
 )
 
 function funHelp()
@@ -72,25 +87,54 @@ function funHelp()
      exit 1
 }
 
-if ($Help)
-{
-     funHelp
+Function ConvertTo-DistinguishedName()
+{ # http://jeffwouters.nl/index.php/2012/05/convert-a-domain-name-to-a-usable-distinguished-name-format/
+<#
+.Synopsis
+Function to convert a domain name into a distinguished name format.
+
+  .Description
+Function to convert a domain name into a distinguished name format.
+No default is used.
+
+  .Example
+Convert-ToDistinguishedName -DomainName “jeffwouters.lan”
+
+  .Example
+Convert-ToDistinguishedName -Name “jeffwouters.lan”
+
+  .Notes
+Author: Jeff Wouters | Methos IT
+#>
+param ( [Parameter(Position=0, Mandatory=$True)][ValidateNotNullOrEmpty()][Alias(‘Name’)][String]$DomainName )
+$DomainSplit = $DomainName.split(“.”)
+if ($DomainSplit[2] -ne $null) {
+$DomainName = “DC=$($DomainSplit[0]),DC=$($DomainSplit[1]),DC=$($DomainSplit[2])”
+$DomainName
+} else {
+$DomainName = “DC=$($DomainSplit[0]),DC=$($DomainSplit[1])”
+$DomainName
+}
 }
 
-if (-not($Domain))
-{
-     Write-Output "You must specify a value for -Domain"
-     funhelp
-}
 
-Write-Output "Configuring the SCP for Hybrid Azure AD join in your Active Directory forest."
+
+Write-Verbose "Configuring the SCP for Hybrid Azure AD join in your Active Directory forest."
 
 ## Set variables
-$azureADId = "azureADId:fc0a1de5-3ce4-4490-9f77-e5b764edcf44"
-$azureADName = "azureADName:" + $Domain
+$azureADId = "azureADId:" + $AADTenant
+$azureADName = "azureADName:" + $AADDomain
 $keywords = "keywords"
 $ldap = "LDAP://"
-$rootDSE = New-Object System.DirectoryServices.DirectoryEntry($ldap + "RootDSE")
+if(-not($ADDSForest))
+{
+     $rootDSE = New-Object System.DirectoryServices.DirectoryEntry($ldap + "RootDSE")
+}
+else
+{
+     $rootDSE = New-Object System.DirectoryServices.DirectoryEntry($ldap + (ConvertTo-DistinguishedName -name $ADDSForest))
+     
+}
 $configCN = $rootDSE.Properties["configurationNamingContext"][0].ToString()
 $servicesCN = "CN=Services," + $configCN
 $drcCN = "CN=Device Registration Configuration," + $servicesCN
@@ -130,10 +174,10 @@ else
 
 if ($Error)
 {
-     Write-Output "Configuration could not be completed."
-     Write-Output $Error
+     Write-Error "Configuration could not be completed."
+     Write-Error $Error
 }
 else
 {
-     Write-Output "Configuration complete!"
+     Write-Verbose "Configuration complete!"
 }
