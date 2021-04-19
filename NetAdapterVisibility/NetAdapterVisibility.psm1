@@ -62,10 +62,10 @@ Function Get-NetAdapterVisibility
 Function Set-NetAdapterVisibility
 {
     Param(
-        [Parameter(ValueFromPipelineByPropertyName=$true)]
+        [Parameter(Mandatory=$true,ValueFromPipelineByPropertyName=$true)]
+        [ValidateNotNullOrEmpty()]
         $PSPath,
-        [switch]
-        $ignoreNLA
+        [switch]$ignoreNLA
     )
 
     Process
