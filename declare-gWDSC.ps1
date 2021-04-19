@@ -369,7 +369,7 @@ Configuration gW
             DisplayName = 'Advanced Group Policy Management'
             #Description = ""
 
-            DependsOn = "[ADKDSKey]KDS","[Script]WaitForPDCe"
+            DependsOn = "[ADKDSKey]KDS","[WaitForAny]PDCe"
         }
 
         #Group AGPM
@@ -389,7 +389,7 @@ Configuration gW
 
             #ManagedPasswordPrincipals = 'S-1-5-9'
 
-            DependsOn = "[ADKDSKey]KDS","[Script]WaitForPDCe"
+            DependsOn = "[ADKDSKey]KDS","[WaitForAny]PDCe"
         }
 
         xDnsServerConditionalForwarder IT
