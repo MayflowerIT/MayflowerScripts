@@ -1,22 +1,10 @@
 ﻿
 @{
-
-    # Script module or binary module file associated with this manifest.
-    # RootModule = ''
-    
-    # Version number of this module.
-    ModuleVersion = '0.6.1'
-    
-    # ID used to uniquely identify this module
+    ModuleVersion = '0.6.2'
     GUID = '7f189a65-2fc1-4970-b864-266b8aadff29'
     
-    # Author of this module
     Author = 'John D Pell'
-    
-    # Company or vendor of this module
     CompanyName = 'Mayflower IS&T'
-    
-    # Copyright statement for this module
     Copyright = '(c) 2020 gaelicWizard.LLC. All rights reserved.'
     
     # Description of the functionality provided by this module
@@ -52,7 +40,7 @@
     AliasesToExport = @()
     
     # DSC resources to export from this module
-    DscResourcesToExport = @('OMSagent','NetDeploy')
+    DscResourcesToExport = @('OMSagent','NetDeploy','DirectoryEntry')
     
     # List of all modules packaged with this module
     # ModuleList = @()
@@ -72,7 +60,7 @@
             # LicenseUri = ''
     
             # A URL to the main website for this project.
-            # ProjectUri = ''
+            ProjectUri = 'https://github.com/MayflowerIT/MayflowerScripts'
     
             # A URL to an icon representing this module.
             # IconUri = ''
