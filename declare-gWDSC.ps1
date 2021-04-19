@@ -22,17 +22,19 @@ if ($true -eq $Online)
 Desired State for Managed Servers by Mayflower
 #>
 Configuration gW
-{   [CmdletBinding()]
+{   #[CmdletBinding()]
     Param(
         [ValidateNotNullOrEmpty()]
         [String]
-        $OPSINSIGHTS_WS_ID  = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID",
+        $OPSINSIGHTS_WS_ID = {Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"},
+
         [ValidateNotNullOrEmpty()]
         [String]
-        $OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY",
+        $OPSINSIGHTS_WS_KEY = {Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"},
+
         [ValidateNotNullOrEmpty()]
         [Guid]
-        $OPSINSIGHTS_PID      = Get-AutomationVariable -Name "OPSINSIGHTS_PID", # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" #
+        $OPSINSIGHTS_PID      = {Get-AutomationVariable -Name "OPSINSIGHTS_PID"},
 
         #[String]$RslDDP             = Get-AutomationVariable -Name "RSLDDP",
         #[String]$RslDDCP            = Get-AutomationVariable -Name "RSLDDCP",
@@ -41,14 +43,14 @@ Configuration gW
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $RslDisplayName     = Get-AutomationVariable -Name "RSLDN",
+        $RslDisplayName     = {Get-AutomationVariable -Name "RSLDN"},
         [ValidateNotNullOrEmpty()]
         [Uri]
-        $RslUri                = Get-AutomationVariable -Name "RSLURI",
+        $RslUri                = {Get-AutomationVariable -Name "RSLURI"},
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $NetDeployID            = Get-AutomationVariable -Name "DEPLOYID"
+        $NetDeployID            = {Get-AutomationVariable -Name "DEPLOYID"}
         #[Uri]$NetDeployUri              = Get-AutomationVariable -Name "DEPLOYURI"
         #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
     )#Param
@@ -204,7 +206,7 @@ Configuration gW
             foreach ($Subnet in $ConfigurationData.Subnets)
             {   $SubnetId = "10."+ $Site.SiteIndex +"."+ $Subnet.VLAN #+".0"
 
-                xDHCPServerScope "$SiteName"+"$($Subnet.Name)"
+                xDHCPServerScope "$SiteName$($Subnet.Name)"
                 {
                     Name = "VLAN"+ $Subnet.VLAN +" "+ $Subnet.Name
                     ScopeId = $SubnetId +".0"
@@ -217,7 +219,7 @@ Configuration gW
 
                     DependsOn = "[Service]DHCP"
                 }
-                xDhcpServerExclusionRange "$SiteName"+"$($Subnet.Name)"+"Static"
+                xDhcpServerExclusionRange "$SiteName$($Subnet.Name)Static"
                 {
                     ScipeId = $SubnetId +".0"
                     AddressFamily = "IPv4"
@@ -225,7 +227,7 @@ Configuration gW
                     IPStartRange = $SubnetId +".40"
                     IPEndRange = $SubnetId +".99"
 
-                    DependsOn = "[xDHCPServerScope]"+ $SiteName + $Subnet.Name
+                    DependsOn = "[xDHCPServerScope]$SiteName$($Subnet.Name)"
                 }
                 xDhcpServerExclusionRange $SiteName + $Subnet.Name + "Network"
                 {
@@ -235,10 +237,10 @@ Configuration gW
                     IPStartRange = $SubnetId +".200"
                     IPEndRange = $SubnetId +".239"
 
-                    DependsOn = "[xDHCPServerScope]"+ $SiteName + $Subnet.Name
+                    DependsOn = "[xDHCPServerScope]$SiteName$($Subnet.Name)"
                 }
 
-                ADReplicationSubnet "$SiteName"+"$($Subnet.Name)"
+                ADReplicationSubnet "$SiteName$($Subnet.Name)"
                 {
                     Name = $SubnetId + ".0/24"
                     Site = $SiteName
@@ -268,6 +270,7 @@ Configuration gW
         DNSRecordCName $NodeName
         {
             Name = $NodeName
+            ZoneName = $Node.DNSName
             HostNameAlias = $Node.DNSName
 
             DependsOn = "[WaitForADDomain]$NodeName"
