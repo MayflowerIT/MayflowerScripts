@@ -17,6 +17,13 @@ if ($true -eq $Online)
     Import-Module -Name MayflowerScripts -ErrorAction STOP
 }
 
+$PSDefaultParameterValues=@{ "gW:OPSINSIGHTS_WS_ID" = {{Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"}} }
+$PSDefaultParameterValues=@{ "gW:OPSINSIGHTS_WS_KEY" = {{Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"}} }
+$PSDefaultParameterValues=@{ "gW:OPSINSIGHTS_PID" = {{Get-AutomationVariable -Name "OPSINSIGHTS_PID"}} }
+$PSDefaultParameterValues=@{ "gW:RslDisplayName" = {{Get-AutomationVariable -Name "RSLDN"}} }
+$PSDefaultParameterValues=@{ "gW:RslUri" = {{Get-AutomationVariable -Name "RSLURI"}} }
+$PSDefaultParameterValues=@{ "gW:NetDeployID" = {{Get-AutomationVariable -Name "DEPLOYID"}} }
+
 <#
 .Description
 Desired State for Managed Servers by Mayflower
@@ -26,15 +33,15 @@ Configuration gW
     Param(
         [ValidateNotNullOrEmpty()]
         [String]
-        $OPSINSIGHTS_WS_ID = {Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"},
+        $OPSINSIGHTS_WS_ID,
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $OPSINSIGHTS_WS_KEY = {Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"},
+        $OPSINSIGHTS_WS_KEY,
 
         [ValidateNotNullOrEmpty()]
         [Guid]
-        $OPSINSIGHTS_PID      = {Get-AutomationVariable -Name "OPSINSIGHTS_PID"},
+        $OPSINSIGHTS_PID,
 
         #[String]$RslDDP             = Get-AutomationVariable -Name "RSLDDP",
         #[String]$RslDDCP            = Get-AutomationVariable -Name "RSLDDCP",
@@ -43,14 +50,14 @@ Configuration gW
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $RslDisplayName     = {Get-AutomationVariable -Name "RSLDN"},
+        $RslDisplayName,
         [ValidateNotNullOrEmpty()]
         [Uri]
-        $RslUri                = {Get-AutomationVariable -Name "RSLURI"},
+        $RslUri,
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $NetDeployID            = {Get-AutomationVariable -Name "DEPLOYID"}
+        $NetDeployID
         #[Uri]$NetDeployUri              = Get-AutomationVariable -Name "DEPLOYURI"
         #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
     )#Param
