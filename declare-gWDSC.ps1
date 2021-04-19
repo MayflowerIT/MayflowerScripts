@@ -115,7 +115,6 @@ Configuration gW
         {
             Ensure                     = 'Present'
             Name                       = 'Hamachi'
-            RenameDefaultFirstSiteName = $true
 
             DependsOn = "[Service]NTDS"
         }
@@ -166,44 +165,85 @@ Configuration gW
 
             DependsOn = "[Service]DNS"
         }
-<#
-        foreach ($SiteName in $Node.Sites.Keys)
+
+        ADReplicationSite $NodeName
         {
-            $Site = $Node.Sites.$SiteName
-            $SiteIndex = $Site.SiteIndex
+            RenameDefaultFirstSiteName = $true
+            Name = $NodeName
+            Description = $Node.Description
+
+            DependsOn = "[Service]NTDS"
+        }
+
+        foreach ($Site in $Node.Sites.GetEnumerator())
+        {
+            $SiteName = $Site.Key
+            $Site = $Site.Value
+    
+            foreach ($Subnet in $ConfigurationData.Subnets)
+            {   $SubnetId = "10."+ $Site.SiteIndex +"."+ $Subnet.VLAN #+".0"
+
+                xDHCPServerScope $SiteName + $Subnet.Name
+                {
+                    Name = "VLAN"+ $Subnet.VLAN +" "+ $Subnet.Name
+                    ScopeId = $SubnetId +".0"
+                    SubnetMask = "255.255.255.0"
+                    LeaseDuration = '08:00:00' #New-TimeSpan -Hours 8
+                    AddressFamily = "IPv4"
+
+                    IPStartRange = $SubnetId +".40"
+                    IPEndRange = $SubnetId +".239"
+
+                    DependsOn = "[Service]DHCP"
+                }
+                xDhcpServerExclusionRange $SiteName + $Subnet.Name + "Static"
+                {
+                    ScipeId = $SubnetId +".0"
+                    AddressFamily = "IPv4"
+
+                    IPStartRange = $SubnetId +".40"
+                    IPEndRange = $SubnetId +".99"
+
+                    DependsOn = "[xDHCPServerScope]"+ $SiteName + $Subnet.Name
+                }
+                xDhcpServerExclusionRange $SiteName + $Subnet.Name + "Network"
+                {
+                    ScipeId = $SubnetId +".0"
+                    AddressFamily = "IPv4"
+
+                    IPStartRange = $SubnetId +".200"
+                    IPEndRange = $SubnetId +".239"
+
+                    DependsOn = "[xDHCPServerScope]"+ $SiteName + $Subnet.Name
+                }
+
+                ADReplicationSubnet $SiteName + $Subnet.Name
+                {
+                    Name = $SubnetId + ".0/24"
+                    Site = $SiteName
+                    Location = $Site.Location
+                    Description = $Subnet.Description
+
+                    DependsOn = "[ADReplicationSite]$SiteName"
+                }
+            }
+
             ADReplicationSite $SiteName
             {
                 Name = $SiteName
-                DependsOn = "[Service]NTDS"
-            }
-
-            foreach ($Subnet in $ConfigurationData.ProgramData.Subnets.Keys)
-            {
-                $SubnetId = "10."+$SiteIndex+"."+$Subnet+".0"
-                ADReplicationSubnet $SiteName+$Subnet
-                {
-                    Name = $SubnetId+"/24"
-                    Site = $SiteName
-                    Description = $ConfigurationData.ProgramData.Subnets.$Subnet.Description
-                }
-                #xDHCPServerScope $SiteName+$Subnet
-                #{
-                #    ScopeId = $SubnetId
-                #    ScopeName = $ConfigurationData.ProgramData.Subnets.$Subnet.Name
-                #}
+                DependsOn = "[ADReplicationSite]$NodeName"
             }
         }
-
-        ADReplicationSubnet $Node.NodeName
+        ADReplicationSubnet $NodeName
         {
             Name = '10.'+($Node.ClientIndex)+'.32.0/20'
-            Site = $Node.NodeName
+            Site = $NodeName
             Description = $Node.Description
             Location = $Node.Location
 
-            DependsOn = "[ADReplicationSite]$($Node.NodeName)"
+            DependsOn = "[ADReplicationSite]$($NodeName)"
         }
-#>
+
         Group Administrators
         {
             GroupName='S-1-5-32-544'
@@ -246,6 +286,14 @@ Configuration gW
         xDnsServerConditionalForwarder IT
         {
             Name = "Mayflower.IT"
+            MasterServers = "25.19.19.115","25.17.102.96"
+            ReplicationScope = "Forest"
+
+            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+        }
+        xDnsServerConditionalForwarder TI
+        {
+            Name = '25.in-addr.arpa'
             MasterServers = "25.19.19.115","25.17.102.96"
             ReplicationScope = "Forest"
 
@@ -333,8 +381,8 @@ Configuration gW
 
         WindowsFeature DNSt
         {
+            Name   = "RSAT-DNS-Server"
             Ensure = 'Present'
-            Name   = 'RSAT-DNS-Server'
         }
 
         Script RslVersion
