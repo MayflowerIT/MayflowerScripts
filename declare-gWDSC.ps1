@@ -22,13 +22,17 @@ if ($true -eq $Online)
 Desired State for Managed Servers by Mayflower
 #>
 Configuration gW
-{   Param(
+{   [CmdletBinding()]
+    Param(
         [ValidateNotNullOrEmpty()]
-        [String]$OPSINSIGHTS_WS_ID  = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID",
+        [String]
+        $OPSINSIGHTS_WS_ID  = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID",
         [ValidateNotNullOrEmpty()]
-        [String]$OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY",
+        [String]
+        $OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY",
         [ValidateNotNullOrEmpty()]
-        [Guid]$OPSINSIGHTS_PID      = Get-AutomationVariable -Name "OPSINSIGHTS_PID", # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" #
+        [Guid]
+        $OPSINSIGHTS_PID      = Get-AutomationVariable -Name "OPSINSIGHTS_PID", # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" #
 
         #[String]$RslDDP             = Get-AutomationVariable -Name "RSLDDP",
         #[String]$RslDDCP            = Get-AutomationVariable -Name "RSLDDCP",
@@ -36,12 +40,15 @@ Configuration gW
         #[String]$RslIso,
 
         [ValidateNotNullOrEmpty()]
-        [String]$RslDisplayName     = Get-AutomationVariable -Name "RSLDN",
+        [String]
+        $RslDisplayName     = Get-AutomationVariable -Name "RSLDN",
         [ValidateNotNullOrEmpty()]
-        [Uri]$RslUri                = Get-AutomationVariable -Name "RSLURI",
+        [Uri]
+        $RslUri                = Get-AutomationVariable -Name "RSLURI",
 
         [ValidateNotNullOrEmpty()]
-        [String]$NetDeployID            = Get-AutomationVariable -Name "DEPLOYID"
+        [String]
+        $NetDeployID            = Get-AutomationVariable -Name "DEPLOYID"
         #[Uri]$NetDeployUri              = Get-AutomationVariable -Name "DEPLOYURI"
         #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
     )#Param
@@ -210,7 +217,7 @@ Configuration gW
 
                     DependsOn = "[Service]DHCP"
                 }
-                xDhcpServerExclusionRange "$SiteName"+"$($Subnet.Name)"+"Static""
+                xDhcpServerExclusionRange "$SiteName"+"$($Subnet.Name)"+"Static"
                 {
                     ScipeId = $SubnetId +".0"
                     AddressFamily = "IPv4"
