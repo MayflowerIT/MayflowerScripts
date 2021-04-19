@@ -116,7 +116,7 @@ Configuration gW
             Ensure                     = 'Present'
             Name                       = 'Hamachi'
 
-            DependsOn = "[Service]NTDS"
+            DependsOn = "[WaitForADDomain]$NodeName"
         }
 
         ADReplicationSubnet Hamachi
@@ -127,6 +127,11 @@ Configuration gW
             Description = 'LogMeIn Hamachi'
 
             DependsOn = "[ADReplicationSite]Hamachi"
+        }
+
+        Script ADReplicationHamachi
+        {
+            #don't display in general UI
         }
 #>
         Script PublishStaticAddresses
@@ -172,7 +177,7 @@ Configuration gW
             Name = $NodeName
             Description = $Node.Description
 
-            DependsOn = "[Service]NTDS"
+            DependsOn = "[WaitForADDomain]$NodeName"
         }
 
         foreach ($Site in $Node.Sites.GetEnumerator())
@@ -241,16 +246,46 @@ Configuration gW
             Description = $Node.Description
             Location = $Node.Location
 
-            DependsOn = "[ADReplicationSite]$($NodeName)"
+            DependsOn = "[ADReplicationSite]$NodeName"
+        }
+
+        DNSRecordCName $NodeName
+        {
+            Name = $NodeName
+            HostNameAlias = $Node.DNSName
+
+            DependsOn = "[WaitForADDomain]$NodeName"
+        }
+
+        WaitForADDomain $NodeName
+        {
+            DomainName              = $Node.DNSName
+            SiteName                = $NodeName
+            WaitForValidCredentials = $true
+
+            DependsOn = "[Service]NTDS","[Service]DNS"
+        }
+
+        WaitForAny PDC 
+        {
+            ResourceName = "[WaitForADDomain]$NodeName"
+            NodeName = $NodeName
+        }
+
+        Script WaitForPDCe
+        {
+            # figure out how to locate and force replication with PDCe?
+            # Try to query PDCe if DSC has completed and *then* force replication?
+            # Invoke-DscResource WaitForAny NodeName = $TehPDCe, ResourceName = "[everything]completed"?
+            # DSC full success happened more recently than local configuration last modified?
         }
 
         Group Administrators
         {
-            GroupName='S-1-5-32-544'
-            Ensure= 'Present'
+            GroupName = 'S-1-5-32-544'
             MembersToInclude= 'S-1-5-9'
 
-            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
+            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]ADDSt"
         }
 
         ADManagedServiceAccount AGPM
@@ -260,13 +295,13 @@ Configuration gW
             DisplayName = 'Advanced Group Policy Management'
             #Description = ""
 
-            DependsOn = "[ADKDSKey]KDS"
+            DependsOn = "[ADKDSKey]KDS","[Script]WaitForPDCe"
         }
 
         #Group AGPM
         #{
-        #    GroupName= (Join-Path $Node.NodeName "Group Policy Creator Owners")
-        #    MembersToInclude = (Join-Path $Node.NodeName 'AGPM$')
+        #    GroupName= (Join-Path $NodeName "Group Policy Creator Owners")
+        #    MembersToInclude = (Join-Path $NodeName 'AGPM$')
 
         #    DependsOn = "[ADManagedServiceAccount]AGPM"
         #}
@@ -280,7 +315,7 @@ Configuration gW
 
             #ManagedPasswordPrincipals = 'S-1-5-9'
 
-            DependsOn = "[ADKDSKey]KDS"
+            DependsOn = "[ADKDSKey]KDS","[Script]WaitForPDCe"
         }
 
         xDnsServerConditionalForwarder IT
@@ -289,7 +324,7 @@ Configuration gW
             MasterServers = "25.19.19.115","25.17.102.96"
             ReplicationScope = "Forest"
 
-            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]DNSt"
         }
         xDnsServerConditionalForwarder TI
         {
@@ -297,7 +332,7 @@ Configuration gW
             MasterServers = "25.19.19.115","25.17.102.96"
             ReplicationScope = "Forest"
 
-            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]DNSt"
         }
 
         xDnsServerForwarder DNS
@@ -318,7 +353,7 @@ Configuration gW
             ReplicationScope = 'Forest'
             Ensure           = 'Present'
 
-            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]DNSt"
         }
         xDnsServerADZone xARPA
         {
@@ -327,7 +362,7 @@ Configuration gW
             ReplicationScope = 'Forest'
             Ensure           = 'Absent'
 
-            DependsOn = "[Service]DNS","[WindowsFeature]DNSt"
+            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]DNSt"
         }
 
         Service DNS
@@ -354,7 +389,7 @@ Configuration gW
             EffectiveTime = '5/1/2018 00:00'
             AllowUnsafeEffectiveTime = $true
 
-            DependsOn = "[Service]NTDS","[WindowsFeature]ADDSt"
+            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]ADDSt"
         }
 
         WindowsFeature ADDS
