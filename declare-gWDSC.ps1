@@ -292,7 +292,7 @@ Configuration gW
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
-
+<#
         Script WaitForPDCe
         {
             # figure out how to locate and force replication with PDCe?
@@ -300,7 +300,7 @@ Configuration gW
             # Invoke-DscResource WaitForAny NodeName = $TehPDCe, ResourceName = "[everything]completed"?
             # DSC full success happened more recently than local configuration last modified?
         }
-
+#>
         ADForestProperties $NodeName
         {
             ForestName                  = $Node.DNSName
