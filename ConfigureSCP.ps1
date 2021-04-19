@@ -87,34 +87,43 @@ function funHelp()
      exit 1
 }
 
-Function ConvertTo-DistinguishedName()
-{ # http://jeffwouters.nl/index.php/2012/05/convert-a-domain-name-to-a-usable-distinguished-name-format/
 <#
-.Synopsis
-Function to convert a domain name into a distinguished name format.
+.SYNOPSIS
+ Converts DNS-style domain name to X.500 style distinguished name.
 
-  .Description
-Function to convert a domain name into a distinguished name format.
-No default is used.
+.Description
+ Function to convert a fully qualified domain name into a distinguished name format.
 
-  .Example
-Convert-ToDistinguishedName -DomainName “jeffwouters.lan”
 
-  .Example
-Convert-ToDistinguishedName -Name “jeffwouters.lan”
 
-  .Notes
-Author: Jeff Wouters | Methos IT
+.Example
+ ConvertTo-DistinguishedName -DomainName "Mayflower.IT"
+
+.Example
+ ConvertTo-DistinguishedName -Name "Mayflower.IT"
 #>
-param ( [Parameter(Position=0, Mandatory=$True)][ValidateNotNullOrEmpty()][Alias(‘Name’)][String]$DomainName )
-$DomainSplit = $DomainName.split(“.”)
-if ($DomainSplit[2] -ne $null) {
-$DomainName = “DC=$($DomainSplit[0]),DC=$($DomainSplit[1]),DC=$($DomainSplit[2])”
-$DomainName
-} else {
-$DomainName = “DC=$($DomainSplit[0]),DC=$($DomainSplit[1])”
-$DomainName
-}
+Function ConvertTo-DistinguishedName()
+{    Param(
+          [Parameter(Mandatory=$True)]
+          [ValidateNotNullOrEmpty()]
+          [Alias(‘Name’)]
+          [String]$DomainName,
+          [Switch]$PassThru
+     )
+
+     $DomainSplit = $DomainName.split(“.”)
+
+     #TODO: validate that single-domain-component name would be valid
+     [X500DistinguishedName]$DistinguishedName = "DC=" + ($DomainSplit -join ",DC=")
+     if($PassThru)
+     {
+          Write-Verbose "Passing thru [X500DistinguishedName]$DistinguishedName"
+          return $DistinguishedName
+     }
+     else
+     {
+          return $DistinguishedName.Name
+     }
 }
 
 
