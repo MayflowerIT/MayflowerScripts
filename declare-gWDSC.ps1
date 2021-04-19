@@ -314,7 +314,7 @@ Configuration gW
         ADOptionalFeature $NodeName
         {
             FeatureName                       = "Recycle Bin Feature"
-            #EnterpriseAdministratorCredential = $EnterpriseAdministratorCredential
+            EnterpriseAdministratorCredential = New-Object System.Management.Automation.PSCredential("NT Authority\SYSTEM", (new-object System.Security.SecureString))
             ForestFQDN                        = $Node.DNSName
 
             DependsOn = "[WaitForAny]PDCe","[ADForestFunctionalLevel]$NodeName"
