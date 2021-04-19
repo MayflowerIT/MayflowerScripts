@@ -1,48 +1,57 @@
-﻿#Param(
-#    [Switch]$Online = $false
-#)
-<#
-.Description
-Desired State for Managed Servers by Mayflower
-#>
+﻿
+#Requires -Module MayflowerScripts
+#Requires -Module PSDscResources
+#Requires -Module xPSDesiredStateConfiguration
+#Requires -Module ActiveDirectoryDsc
+#Requires -Module xDNSServer
+#Requires -Module xDHCPServer
+
 New-Variable -Option Constant -Name DDP   -Value "{31B2F340-016D-11D2-945F-00C04FB984F9}"
 New-Variable -Option Constant -Name DDCP  -Value "{6AC1786C-016F-11D2-945F-00C04FB984F9}"
 
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
 
-Install-Module -Scope AllUsers -Name PSDscResources,xPSDesiredStateConfiguration,ActiveDirectoryDsc
-Import-Module -Name MayflowerScripts -ErrorAction STOP
-
-Configuration gW
+if ($true -eq $Online)
 {
-    #Param
-    #(
-    #    [string[]]$ComputerName='localhost'
-    #)
+    Install-Module -Scope AllUsers -Name PSDscResources,xPSDesiredStateConfiguration,ActiveDirectoryDsc
+    Import-Module -Name MayflowerScripts -ErrorAction STOP
+}
 
-    $OPSINSIGHTS_WS_ID  = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"
-    $OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"
-    $OPSINSIGHTS_PID    = Get-AutomationVariable -Name "OPSINSIGHTS_PID" # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" #
+<#
+.Description
+Desired State for Managed Servers by Mayflower
+#>
+Configuration gW
+{   Param(
+        [ValidateNotNullOrEmpty()]
+        [String]$OPSINSIGHTS_WS_ID  = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID",
+        [ValidateNotNullOrEmpty()]
+        [String]$OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY",
+        [ValidateNotNullOrEmpty()]
+        [Guid]$OPSINSIGHTS_PID      = Get-AutomationVariable -Name "OPSINSIGHTS_PID", # "774E20C6-9B94-48F2-99C9-8E1FAE17C960" #
 
-    $OIPackageLocalPath = Join-Path $SystemSixteen "MMASetup-AMD64.exe"
+        #[String]$RslDDP             = Get-AutomationVariable -Name "RSLDDP",
+        #[String]$RslDDCP            = Get-AutomationVariable -Name "RSLDDCP",
+        #[String]$RslNL              = Get-AutomationVariable -Name "RSLNL",
+        #[String]$RslIso,
 
-    $RslDDP             = Get-AutomationVariable -Name "RSLDDP"
-    $RslDDCP            = Get-AutomationVariable -Name "RSLDDCP"
-    $RslNL              = Get-AutomationVariable -Name "RSLNL"
-    #$RslIso
+        [ValidateNotNullOrEmpty()]
+        [String]$RslDisplayName     = Get-AutomationVariable -Name "RSLDN",
+        [ValidateNotNullOrEmpty()]
+        [Uri]$RslUri                = Get-AutomationVariable -Name "RSLURI",
 
-    $RslDisplayName     = Get-AutomationVariable -Name "RSLDN"
-    $RslUri             = Get-AutomationVariable -Name "RSLURI"
+        [ValidateNotNullOrEmpty()]
+        [String]$NetDeployID            = Get-AutomationVariable -Name "DEPLOYID"
+        #[Uri]$NetDeployUri              = Get-AutomationVariable -Name "DEPLOYURI"
+        #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
+    )#Param
 
+    #$OIPackageLocalPath = Join-Path $SystemSixteen "MMASetup-AMD64.exe"
     $RslName            = ($RslDisplayName -replace ' ','')
     $RslService         = ($RslName -replace '[aeiou]','')
     $RslBinPath         = Join-Path $SystemSixteen ($RslName + "_x64.exe")
     $RslPath            = Join-Path $env:ProgramData $RslName
     $RslJson            = Join-Path $RslPath ($RslName + ".json")
-
-    $NetDeployID        = Get-AutomationVariable -Name "DEPLOYID"
-    #$NetDeployUri       = Get-AutomationVariable -Name "DEPLOYURI"
-    #$NetDeployPid       = Get-AutomationVariable -Name "DEPLOYPID"
 
     Import-DscResource -ModuleName xPSDesiredStateConfiguration # M$-preview, extra features without support
     Import-DscResource -ModuleName PSDscResources # M$-supported, replaces in-box PSDesiredStateConfiguration
@@ -57,8 +66,8 @@ Configuration gW
 
     Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
     { # Active Directory Domain Services, Domain Controller
-        $DomainNameComponents = $Node.DNSName.Split(".")
-        $DomainDN = "DC="+ ($DomainNameComponents -join ",DC=")
+        $DomainComponents = $Node.DNSName.Split(".")
+        $NodeDistinguishedName = "DC="+ ($DomainComponents -join ",DC=")
 
         xService RslService
         { 
@@ -188,7 +197,7 @@ Configuration gW
             foreach ($Subnet in $ConfigurationData.Subnets)
             {   $SubnetId = "10."+ $Site.SiteIndex +"."+ $Subnet.VLAN #+".0"
 
-                xDHCPServerScope $SiteName + $Subnet.Name
+                xDHCPServerScope "$SiteName"+"$($Subnet.Name)"
                 {
                     Name = "VLAN"+ $Subnet.VLAN +" "+ $Subnet.Name
                     ScopeId = $SubnetId +".0"
@@ -201,7 +210,7 @@ Configuration gW
 
                     DependsOn = "[Service]DHCP"
                 }
-                xDhcpServerExclusionRange $SiteName + $Subnet.Name + "Static"
+                xDhcpServerExclusionRange "$SiteName"+"$($Subnet.Name)"+"Static""
                 {
                     ScipeId = $SubnetId +".0"
                     AddressFamily = "IPv4"
@@ -222,7 +231,7 @@ Configuration gW
                     DependsOn = "[xDHCPServerScope]"+ $SiteName + $Subnet.Name
                 }
 
-                ADReplicationSubnet $SiteName + $Subnet.Name
+                ADReplicationSubnet "$SiteName"+"$($Subnet.Name)"
                 {
                     Name = $SubnetId + ".0/24"
                     Site = $SiteName
@@ -266,10 +275,12 @@ Configuration gW
             DependsOn = "[Service]NTDS","[Service]DNS"
         }
 
-        WaitForAny PDC 
+        WaitForAny PDCe
         {
             ResourceName = "[WaitForADDomain]$NodeName"
             NodeName = $NodeName
+
+            DependsOn = "[WaitForADDomain]$NodeName"
         }
 
         Script WaitForPDCe
@@ -278,6 +289,52 @@ Configuration gW
             # Try to query PDCe if DSC has completed and *then* force replication?
             # Invoke-DscResource WaitForAny NodeName = $TehPDCe, ResourceName = "[everything]completed"?
             # DSC full success happened more recently than local configuration last modified?
+        }
+
+        ADForestProperties $NodeName
+        {
+            ForestName                  = $Node.DNSName
+            UserPrincipalNameSuffix     = $Node.ExternalDomains
+            ServicePrincipalNameSuffix  = $Node.InternalDomains
+            TombstoneLifetime           = 2401 # 6 and a half years
+
+            DependsOn = "[WaitForAny]PDCe"
+        }
+
+        ADOptionalFeature $NodeName
+        {
+            FeatureName                       = "Recycle Bin Feature"
+            #EnterpriseAdministratorCredential = $EnterpriseAdministratorCredential
+            ForestFQDN                        = $Node.DNSName
+
+            DependsOn = "[WaitForAny]PDCe","[ADForestFunctionalLevel]$NodeName"
+        }
+
+        ADForestFunctionalLevel $NodeName
+        {
+            ForestIdentity = $Node.DNSName
+            ForestMode     = 'Windows2008R2Forest' #Windows2008R2Forest, Windows2012Forest, Windows2012R2Forest, Windows2016Forest
+
+            DependsOn = "[WaitForAny]PDCe"
+        }
+
+        ADDomainFunctionalLevel $NodeName
+        {
+            DomainIdentity = $Node.DNSName
+            DomainMode     = 'Windows2008R2Domain' #Windows2008R2Domain, Windows2012Domain, Windows2012R2Domain, Windows2016Domain
+
+            DependsOn = "[WaitForAny]PDCe"
+        }
+
+        ADOrganizationalUnit $NodeName
+        {
+            Name                            = $NodeName
+            Path                            = $NodeDistinguishedName
+            Description                     = $Node.Description
+            ProtectedFromAccidentalDeletion = $true
+            RestoreFromRecycleBin           = $true
+
+            DependsOn = "[WaitForADDomain]$NodeName"
         }
 
         Group Administrators
