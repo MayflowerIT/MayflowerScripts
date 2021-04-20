@@ -317,7 +317,7 @@ Configuration gW
 
             DependsOn = "[WaitForAny]PDCe"
         }
-
+<#
         ADOptionalFeature $NodeName
         {
             FeatureName                       = "Recycle Bin Feature"
@@ -326,7 +326,7 @@ Configuration gW
 
             DependsOn = "[WaitForAny]PDCe","[ADForestFunctionalLevel]$NodeName"
         }
-
+#>
         ADForestFunctionalLevel $NodeName
         {
             ForestIdentity = $Node.DNSName
