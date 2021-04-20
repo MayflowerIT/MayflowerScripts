@@ -1,82 +1,82 @@
 ﻿
 #Requires -Module PSDscResources
-$PSDefaultParameterValues=@{ "NetDeploy:NetDeployID" = {{Get-AutomationVariable -Name "DEPLOYID"}} }
-#$PSDefaultParameterValues=@{ "NetDeploy:Path" = {{Get-AutomationVariable -Name "DEPLOYURI"}} }
-$NetDeployProductId = Get-AutomationVariable -Name "DEPLOYPID" -ErrorAction SilentlyContinue
+
+$AzAutomation = Get-Command -Name "Get-AutomationVariable"
+if($AzAutomation)
+{
+    #$NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
+    $NetDeployUri = Get-AutomationVariable -Name "DEPLOYURI"
+    $NetDeployProductId = Get-AutomationVariable -Name "DEPLOYPID"
+}
 
 Configuration NetDeploy
 {   Param(
-        [Parameter(Mandatory = $true,
-        ValueFromPipelineByPropertyName=$true)]
+        [Parameter(Mandatory = $true)]
         [String]$DeployId,
-        #[Parameter(Mandatory = $true,
-        #ValueFromPipelineByPropertyName=$true)]
-        #[Uri]$Path,
-        #[Parameter(Mandatory = $true,
-        #ValueFromPipelineByPropertyName=$true)]
+        [Uri]$Path = $NetDeployUri,
         [Guid]$ProductId = $NetDeployProductId
     )
 
     Import-DscResource -ModuleName PSDscResources # xPSDesiredStateConfiguration,
 
-    MsiPackage Hamachi
+    MsiPackage NetDeploy
     {
         ProductId = $ProductId
-        Path = "https://secure.logmein.com/hamachi.msi"
+        Path = $Path
         Arguments = "/qn ARPSYSTEMCOMPONENT=1 DEPLOYID=$DeployId"
     }
 
-    Service Hamachi
+    Service NetDeploy
     {
         Name = "Hamachi2Svc"
         StartupType = 'Automatic'
         State = 'Running'
 
-        DependsOn = "[MsiPackage]Hamachi"
+        DependsOn = "[MsiPackage]NetDeploy"
     }
 
     Import-DscResource -ModuleName NetworkingDsc
 
-    NetAdapterName Hamachi
+    NetAdapterName NetDeploy
     {
-        DependsOn = "[Service]Hamachi"
-        NewName = "Hamachi"
+        DependsOn = "[Service]NetDeploy"
+        NewName = "Miniport"
         DriverDescription = "LogMeIn Hamachi Virtual Ethernet Adapter"
     }
 
-    NetIPInterface Hamachi4
+    NetIPInterface NetDeploy4
     {
-        DependsOn = "[NetAdapterName]Hamachi"
-        InterfaceAlias = "Hamachi"
+        DependsOn = "[NetAdapterName]NetDeploy"
+        InterfaceAlias = "Miniport"
         AddressFamily = "IPv4"
         InterfaceMetric = 9000
     }
 
-    NetIPInterface Hamachi6
+    NetIPInterface NetDeploy6
     {
-        DependsOn = "[NetAdapterName]Hamachi"
-        InterfaceAlias = "Hamachi"
+        DependsOn = "[NetAdapterName]NetDeploy"
+        InterfaceAlias = "Miniport"
         AddressFamily = "IPv6"
         InterfaceMetric = 9000
     }
 
-#    NetConnectionProfile Hamachi
+#    NetConnectionProfile NetDeploy
  #   {
-  #      InterfaceAlias = "Hamachi"
+  #      InterfaceAlias = "Miniport"
    #     NetworkCategory = "Private"
     #}
 
-    DefaultGatewayAddress Hamachi4
+    DefaultGatewayAddress NetDeploy4
     {
-        DependsOn = "[NetAdapterName]Hamachi"
-        InterfaceAlias = "Hamachi"
+        DependsOn = "[NetAdapterName]NetDeploy"
+        InterfaceAlias = "Miniport"
         AddressFamily = "IPv4"
     }
 
-    DefaultGatewayAddress Hamachi6
+    DefaultGatewayAddress NetDeploy6
     {
-        DependsOn = "[NetAdapterName]Hamachi"
-        InterfaceAlias = "Hamachi"
+        DependsOn = "[NetAdapterName]NetDeploy"
+        InterfaceAlias = "Miniport"
         AddressFamily = "IPv6"
     }
 
@@ -99,7 +99,7 @@ Configuration NetDeployIT
         DnsServerAddress ITv4
         {
             DependsOn = "[NetDeploy]IT"
-            InterfaceAlias = "Hamachi"
+            InterfaceAlias = "Miniport"
             AddressFamily = "IPv4"
             Address = "25.19.19.115","25.17.102.96"
             Validate = $true
@@ -108,7 +108,7 @@ Configuration NetDeployIT
         DnsServerAddress ITv6
         {
             DependsOn = "[NetDeploy]IT"
-            InterfaceAlias = "Hamachi"
+            InterfaceAlias = "Miniport"
             AddressFamily = "IPv6"
             Address = '2620:9b::1913:1373','2620:9b::1911:6660'
             Validate = $false
@@ -117,15 +117,15 @@ Configuration NetDeployIT
         DnsConnectionSuffix IT
         {
             DependsOn = "[DnsServerAddress]ITv4","[DnsServerAddress]ITv6"
-            InterfaceAlias = "Hamachi"
+            InterfaceAlias = "Miniport"
             ConnectionSpecificSuffix = "Mayflower.IT"
             RegisterThisConnectionsAddress = $false
         }
 
-        NetBios Hamachi
+        NetBios NetDeploy
         {
             DependsOn = "[DnsConnectionSuffix]IT"
-            InterfaceAlias = "Hamachi"
+            InterfaceAlias = "Miniport"
             Setting = "Disable"
 }   }   }
 
@@ -137,19 +137,19 @@ if($true -eq $Online)
 }
 
 if($false){
-$hamachiMSI = "hamachi.msi"
-$hamachiURI = "https://secure.logmein.com/$HamachiMSI"
+$NetDeployMSI = "hamachi.msi"
+$NetDeployURI = "https://secure.logmein.com/$NetDeployMSI"
 
-Invoke-WebRequest -uri $hamachiURI -OutFile $hamachiMSI 
+Invoke-WebRequest -uri $NetDeployURI -OutFile $NetDeployMSI 
 
-msiexec /i $hamachiMSI /qn DEPLOYID="o5edsqqak5ddpmjvcev2xnetvl007pbm83kb7397"
+msiexec /i $NetDeployMSI /qn DEPLOYID="o5edsqqak5ddpmjvcev2xnetvl007pbm83kb7397"
 
 ping -n 10 localhost 
-Get-NetAdapter -InterfaceDescription *Hamachi* | Rename-NetAdapter -NewName Hamachi
+Get-NetAdapter -InterfaceDescription *Hamachi* | Rename-NetAdapter -NewName NetDeploy
 ping -n 10 localhost
-Set-NetIPInterface -InterfaceAlias Hamachi -InterfaceMetric 9000
-Remove-NetRoute -InterfaceAlias Hamachi -DestinationPrefix 0.0.0.0/0 -confirm:$false -ErrorAction SilentlyContinue
-Remove-NetRoute -InterfaceAlias Hamachi -DestinationPrefix ::/0 -confirm:$false -ErrorAction SilentlyContinue
+Set-NetIPInterface -InterfaceAlias NetDeploy -InterfaceMetric 9000
+Remove-NetRoute -InterfaceAlias NetDeploy -DestinationPrefix 0.0.0.0/0 -confirm:$false -ErrorAction SilentlyContinue
+Remove-NetRoute -InterfaceAlias NetDeploy -DestinationPrefix ::/0 -confirm:$false -ErrorAction SilentlyContinue
 Get-DNSClientNRPTRule | Remove-DNSClientNRPTRule -Force
 Add-DNSClientNRPTRule -NameServers "25.19.19.115","25.17.102.96" -Namespace  "Mayflower.IT" -Verbose
 Add-DNSClientNRPTRule -NameServers "25.19.19.115","25.17.102.96" -Namespace ".Mayflower.IT" -Verbose
