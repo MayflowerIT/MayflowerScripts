@@ -6,9 +6,14 @@ $PSDefaultParameterValues=@{ "NetDeploy:ProductId" = {{Get-AutomationVariable -N
 
 Configuration NetDeploy
 {   Param(
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $true,
+        ValueFromPipelineByPropertyName=$true)]
         [String]$DeployId,
+        #[Parameter(Mandatory = $true,
+        #ValueFromPipelineByPropertyName=$true)]
         #[Uri]$Path,
+        [Parameter(Mandatory = $true,
+        ValueFromPipelineByPropertyName=$true)]
         [Guid]$ProductId
     )
 
