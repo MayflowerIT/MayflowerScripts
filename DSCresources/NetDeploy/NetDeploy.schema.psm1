@@ -1,14 +1,15 @@
 ﻿
-$NetDeployID        = Get-AutomationVariable -Name "DEPLOYID"
-$NetDeployUri       = Get-AutomationVariable -Name "DEPLOYURI"
-$NetDeployPid       = Get-AutomationVariable -Name "DEPLOYPID" #'ECC0FA07-863E-44BC-8B1D-DA22F96E5FB7' # 2.2.0.633
+#Requires -Module PSDscResources
+$PSDefaultParameterValues=@{ "gW:NetDeployID" = {{Get-AutomationVariable -Name "DEPLOYID"}} }
+$PSDefaultParameterValues=@{ "gW:Path" = {{Get-AutomationVariable -Name "DEPLOYURI"}} }
+$PSDefaultParameterValues=@{ "gW:ProductId" = {{Get-AutomationVariable -Name "DEPLOYPID"}} }
 
 Configuration NetDeploy
 {   Param(
         [Parameter(Mandatory = $true)]
-        [String] $DeployId,
-        [Uri]$Path = $NetDeployUri,
-        [Guid]$ProductId = $NetDeployPid
+        [String]$DeployId,
+        [Uri]$Path,
+        [Guid]$ProductId
     )
 
     Import-DscResource -ModuleName PSDscResources # xPSDesiredStateConfiguration,
