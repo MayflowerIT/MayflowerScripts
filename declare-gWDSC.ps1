@@ -105,6 +105,11 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             DependsOn = "[Script]RslVersion","[Script]RslJson","[xRemoteFile]RslBin"
         }
 
+        NetDeploy ADDS
+        {
+            DeployId = $NetDeployID
+        }
+
 #        ADDSDNS DNS
  #       {
   #          DependsOn = "[WindowsFeature]ADDS"
@@ -569,11 +574,6 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             DependsOn = "[Script]RslVersion"
 
             MatchSource = $false # THIS IS A HACK TO AVOID ACCESS DENIED / IN USE BY ANOTHER PROCESS
-        }
-
-        NetDeploy ADDS
-        {
-            DeployId = $NetDeployID
         }
 
         OMSagent OMSnode
