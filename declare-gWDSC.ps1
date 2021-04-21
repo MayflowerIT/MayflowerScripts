@@ -232,8 +232,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 <##>
         foreach ($Site in $Node.Sites)
         {
-            $SiteName = $Site
-            $Site = $Node.Sites[$SiteName]
+            $SiteName = $Site.Name
 <#
             foreach ($Subnet in $ConfigurationData.Subnets)
             {   $SubnetId = "10."+ $Site.SiteIndex +"."+ $Subnet.VLAN #+".0"
