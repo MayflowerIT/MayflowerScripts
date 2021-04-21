@@ -109,6 +109,7 @@ Configuration NetDeploy
                     Select-Object DriverDesc, PSPath
             
             New-ItemProperty $net.PSPath -name '*NdisDeviceType' -propertytype dword -value 1 | Out-Null
+            Register-DnsClient
         }
         GetScript = {
             $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
