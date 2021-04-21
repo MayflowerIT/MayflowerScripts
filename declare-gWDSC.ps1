@@ -17,12 +17,16 @@ if ($true -eq $Online)
     Import-Module -Name MayflowerScripts -ErrorAction STOP
 }
 
-$PSDefaultParameterValues=@{ "gW:OPSINSIGHTS_WS_ID" = {{Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"}} }
-$PSDefaultParameterValues=@{ "gW:OPSINSIGHTS_WS_KEY" = {{Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"}} }
-$PSDefaultParameterValues=@{ "gW:OPSINSIGHTS_PID" = {{Get-AutomationVariable -Name "OPSINSIGHTS_PID"}} }
-$PSDefaultParameterValues=@{ "gW:RslDisplayName" = {{Get-AutomationVariable -Name "RSLDN"}} }
-$PSDefaultParameterValues=@{ "gW:RslUri" = {{Get-AutomationVariable -Name "RSLURI"}} }
-$PSDefaultParameterValues=@{ "gW:NetDeployID" = {{Get-AutomationVariable -Name "DEPLOYID"}} }
+$AzAutomation = Get-Command -Name "Get-AutomationVariable" -ErrorAction SilentlyContinue
+if($AzAutomation)
+{
+    $OPSINSIGHTS_WS_ID = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"
+    $OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"
+    $OPSINSIGHTS_PID = Get-AutomationVariable -Name "OPSINSIGHTS_PID"
+    $RslDisplayName = Get-AutomationVariable -Name "RSLDN"
+    $RslUri = Get-AutomationVariable -Name "RSLURI"
+    $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
+}
 
 <#
 .Description
