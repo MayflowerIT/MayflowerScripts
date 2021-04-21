@@ -229,7 +229,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
-<##>
+
         foreach ($Site in $Node.Sites)
         {
             $SiteName = $Site.Name
@@ -288,6 +288,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
                 DependsOn = "[ADReplicationSite]$NodeName"
             }
         }#>
+
         ADReplicationSubnet $NodeName
         {
             Name = '10.'+($Node.ClientIndex)+'.32.0/20'
@@ -341,7 +342,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForAny]PDCe"
         }
-<#
+
         ADOptionalFeature $NodeName
         {
             FeatureName                       = "Recycle Bin Feature"
@@ -350,7 +351,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForAny]PDCe","[ADForestFunctionalLevel]$NodeName"
         }
-#>
+
         ADForestFunctionalLevel $NodeName
         {
             ForestIdentity = $Node.DNSName
