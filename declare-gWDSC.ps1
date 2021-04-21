@@ -88,7 +88,8 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
     Import-DscResource -ModuleName xDNSServer # M$-preview
     Import-DscResource -ModuleName xDHCPServer # M$-preview
 
-    Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
+    #Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
+    Node $AllNodes.NodeName
     { # Active Directory Domain Services, Domain Controller
         $DomainComponents = $Node.DNSName.Split(".")
         $NodeDistinguishedName = "DC="+ ($DomainComponents -join ",DC=")
@@ -228,7 +229,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
-<##>
+<#
         foreach ($Site in $Node.Sites.GetEnumerator())
         {
             $SiteName = $Site.Key
@@ -583,7 +584,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             OPSINSIGHTS_WS_KEY = $OPSINSIGHTS_WS_KEY
         }
 
-    }
+    }#$AllNodes
 
     #Node ADDSTH
     #{ # Azure AD Connect
