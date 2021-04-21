@@ -91,7 +91,7 @@ Configuration NetDeploy
         State          = 'Enabled'
     }
 
-    NetAdapterBinding NetDeploy4
+    NetAdapterBinding NetDeploy6
     {
         DependsOn = "[NetAdapterName]NetDeploy"
         InterfaceAlias = $AdapterName
