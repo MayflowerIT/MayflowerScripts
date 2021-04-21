@@ -342,7 +342,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForAny]PDCe"
         }
-
+<#
         ADOptionalFeature $NodeName
         {
             FeatureName                       = "Recycle Bin Feature"
@@ -351,7 +351,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForAny]PDCe","[ADForestFunctionalLevel]$NodeName"
         }
-
+#>
         ADForestFunctionalLevel $NodeName
         {
             ForestIdentity = $Node.DNSName
