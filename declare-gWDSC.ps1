@@ -446,7 +446,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
         xDnsServerADZone ARPA
         {
-            Name             = ($Node.ClientIndex)+'.10.in-addr.arpa'
+            Name             = ''+($Node.ClientIndex)+'.10.in-addr.arpa'
             DynamicUpdate    = 'Secure'
             ReplicationScope = 'Forest'
             Ensure           = 'Present'
