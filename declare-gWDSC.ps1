@@ -138,11 +138,11 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 #ensure scopes exist, DCs have DHCP, set to sync relationship, &c.
 #}
 
-        ADGroup ESX$NodeName
+        ADGroup ESXAdmins
         {
             GroupName  = 'ESX Admins'
             DisplayName = "ESXi Administrators"
-            Description = "Members have Administration privileges on ESXi hosts joined to this domain."
+            Description = "Members have administrative privileges on ESXi hosts joined to this domain."
             GroupScope = 'DomainLocal'
             RestoreFromRecycleBin = $true
 
@@ -315,7 +315,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         WaitForADDomain $NodeName
         {
             DomainName              = $Node.DNSName
-            SiteName                = $NodeName
+            #SiteName                = $NodeName
             WaitForValidCredentials = $true
 
             DependsOn = "[Service]NTDS","[Service]DNS"
@@ -356,6 +356,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             DependsOn = "[WaitForAny]PDCe","[ADForestFunctionalLevel]$NodeName"
         }
 #>
+<#
         ADForestFunctionalLevel $NodeName
         {
             ForestIdentity = $Node.DNSName
@@ -371,7 +372,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForAny]PDCe"
         }
-
+#>
         ADOrganizationalUnit $NodeName
         {
             Name                            = $NodeName
@@ -632,7 +633,7 @@ if ($true -eq $Online)
 
     $gWdsc = Import-PowerShellDataFile -Path (Join-Path $MyPrivateData "gWadds.psd1")
 	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gWdsc
-	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'MyNodeConfiguration' -Path 'C:\MyConfigurations\TestVM1.mof'
+	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'gW' -Path 'C:\MyConfigurations\TestVM1.mof'
 }
 
 #https://docs.microsoft.com/en-us/azure/automation/automation-dsc-compile#manage-configurationdata-when-compiling-configurations-in-azure-automation
