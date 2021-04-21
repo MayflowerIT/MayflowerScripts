@@ -120,6 +120,17 @@ Configuration gW
 #ensure scopes exist, DCs have DHCP, set to sync relationship, &c.
 #}
 
+        ADGroup ESX$NodeName
+        {
+            GroupName  = 'ESX Admins'
+            DisplayName = "ESXi Administrators"
+            Description = "Members have Administration privileges on ESXi hosts joined to this domain."
+            GroupScope = 'DomainLocal'
+            RestoreFromRecycleBin = $true
+
+            DependsOn = "[WaitForAny]PDCe"
+        }
+
 <#
         ADReplicationSiteLink Hamachi
         {
@@ -586,15 +597,27 @@ Configuration gW
 if ($true -eq $Online)
 {
 	Install-Module -Scope AllUsers -Name Az
+    Update-Module -Scope AllUsers -Name Az
 	Connect-AzAccount
 	$MySubscription = "c42f346f-e80f-48e5-ad8e-30a25c669714" # Assigned Partner Benefit
 	Set-AzContext -Subscription $MySubscription
 	$MyResourceGroup = 'Kalimdor'
 	$MyAutomationAccount = 'Drustvar'
 	
-	Import-AzAutomationDscConfiguration -SourcePath $PSCommandPath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -Published
+    if($PSCommandPath)
+    {
+        $MySourcePath = $PSCommandPath
+        $MyPrivateData = Join-Path $PSScriptRoot "PrivateData"
+    }
+    else
+    {
+        $MySourcePath = "declare-gWDSC.ps1"
+        $MyPrivateData = Resolve-Path "PrivateData"
+    }
 
-    $gWdsc = Import-PowerShellDataFile -Path "$PSScriptRoot\PrivateData\gWadds.psd1"
+	Import-AzAutomationDscConfiguration -SourcePath $MySourcePath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount 
+
+    $gWdsc = Import-PowerShellDataFile -Path (Join-Path $MyPrivateData "gWadds.psd1")
 	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gWdsc
 	#Import-AzAutomationDscNodeConfiguration -AutomationAccountName $MyAutomationAccount -ResourceGroupName $MyResourceGroup -ConfigurationName 'MyNodeConfiguration' -Path 'C:\MyConfigurations\TestVM1.mof'
 }
