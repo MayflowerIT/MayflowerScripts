@@ -337,7 +337,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         {
             ForestName                  = $Node.DNSName
             UserPrincipalNameSuffix     = $Node.ExternalDomains
-            ServicePrincipalNameSuffix  = $DNSName,$Node.InternalDomains
+            ServicePrincipalNameSuffix  = $Node.InternalDomains
             TombstoneLifetime           = 2401 # 6 and a half years
 
             DependsOn = "[WaitForAny]PDCe"
