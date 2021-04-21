@@ -1,7 +1,7 @@
 ﻿
 #Requires -Module PSDscResources
 
-$AzAutomation = Get-Command -Name "Get-AutomationVariable"
+$AzAutomation = Get-Command -Name "Get-AutomationVariable" -ErrorAction SilentlyContinue
 if($AzAutomation)
 {
     #$NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
