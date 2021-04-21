@@ -30,7 +30,7 @@ Desired State for Managed Servers by Mayflower
 #>
 Configuration gW
 {   #[CmdletBinding()]
-<#    Param(
+<##>    Param(
         [ValidateNotNullOrEmpty()]
         [String]
         $OPSINSIGHTS_WS_ID,
@@ -62,6 +62,7 @@ Configuration gW
         #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
     )#Param
 #>
+<#
 $OPSINSIGHTS_WS_ID = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"
 $OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"
 $OPSINSIGHTS_PID = Get-AutomationVariable -Name "OPSINSIGHTS_PID"
