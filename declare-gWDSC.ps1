@@ -229,12 +229,12 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
-<#
-        foreach ($Site in $Node.Sites.GetEnumerator())
+<##>
+        foreach ($Site in $Node.Sites)
         {
-            $SiteName = $Site.Key
-            $Site = $Site.Value
-<#    
+            $SiteName = $Site
+            $Site = $Node.Sites[$SiteName]
+<#
             foreach ($Subnet in $ConfigurationData.Subnets)
             {   $SubnetId = "10."+ $Site.SiteIndex +"."+ $Subnet.VLAN #+".0"
 
@@ -281,7 +281,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
                     DependsOn = "[ADReplicationSite]$SiteName"
                 }
-            }<#
+            }#>
 
             ADReplicationSite $SiteName
             {
