@@ -324,7 +324,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         WaitForAny PDCe
         {
             ResourceName = "[WaitForADDomain]$NodeName"
-            NodeName = $NodeName
+            NodeName = $Node.DNSName
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
@@ -344,7 +344,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             ServicePrincipalNameSuffix  = $Node.InternalDomains
             TombstoneLifetime           = 2401 # 6 and a half years
 
-            DependsOn = "[WaitForAny]PDCe"
+            DependsOn = "[WaitForADDomain]$NodeName"
         }
 <#
         ADOptionalFeature $NodeName
@@ -389,7 +389,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             GroupName = 'S-1-5-32-544'
             MembersToInclude= 'S-1-5-9'
 
-            DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]ADDSt"
+            DependsOn = "[WaitForADDomain]$NodeName" #,"[WindowsFeature]ADDSt"
         }
 
         ADManagedServiceAccount AGPM
