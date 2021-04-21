@@ -1,5 +1,6 @@
 ﻿
 #Requires -Module PSDscResources
+New-Variable -Option Constant -Name NetAdapterClass -Value ([guid]"4D36E972-E325-11CE-BFC1-08002BE10318")
 
 $AzAutomation = Get-Command -Name "Get-AutomationVariable" -ErrorAction SilentlyContinue
 if($AzAutomation)
@@ -14,8 +15,10 @@ Configuration NetDeploy
         [Parameter(Mandatory = $true)]
         [String]$DeployId,
         [Uri]$Path = $NetDeployUri,
-        [Guid]$ProductId = $NetDeployProductId
+        [Guid]$ProductId = $NetDeployProductId,
+        [String]$AdapterName = "Miniport"
     )
+    $svcname = $Path.Segments[1].Split(".")[0]
 
     Import-DscResource -ModuleName PSDscResources # xPSDesiredStateConfiguration,
 
@@ -28,7 +31,7 @@ Configuration NetDeploy
 
     Service NetDeploy
     {
-        Name = "Hamachi2Svc"
+        Name = "$($svcname)2Svc"
         StartupType = 'Automatic'
         State = 'Running'
 
@@ -40,47 +43,94 @@ Configuration NetDeploy
     NetAdapterName NetDeploy
     {
         DependsOn = "[Service]NetDeploy"
-        NewName = "Miniport"
-        DriverDescription = "LogMeIn Hamachi Virtual Ethernet Adapter"
+        NewName = $AdapterName
+        DriverDescription = "LogMeIn $svcname Virtual Ethernet Adapter"
     }
 
     NetIPInterface NetDeploy4
     {
-        DependsOn = "[NetAdapterName]NetDeploy"
-        InterfaceAlias = "Miniport"
+        DependsOn = "[NetAdapterBinding]NetDeploy4"
+        InterfaceAlias = $AdapterName
         AddressFamily = "IPv4"
         InterfaceMetric = 9000
     }
 
     NetIPInterface NetDeploy6
     {
-        DependsOn = "[NetAdapterName]NetDeploy"
-        InterfaceAlias = "Miniport"
+        DependsOn = "[NetAdapterBinding]NetDeploy6"
+        InterfaceAlias = $AdapterName
         AddressFamily = "IPv6"
         InterfaceMetric = 9000
     }
 
 #    NetConnectionProfile NetDeploy
  #   {
-  #      InterfaceAlias = "Miniport"
+  #      InterfaceAlias = $AdapterName
    #     NetworkCategory = "Private"
     #}
 
     DefaultGatewayAddress NetDeploy4
     {
-        DependsOn = "[NetAdapterName]NetDeploy"
-        InterfaceAlias = "Miniport"
+        DependsOn = "[NetAdapterBinding]NetDeploy4"
+        InterfaceAlias = $AdapterName
         AddressFamily = "IPv4"
     }
 
     DefaultGatewayAddress NetDeploy6
     {
-        DependsOn = "[NetAdapterName]NetDeploy"
-        InterfaceAlias = "Miniport"
+        DependsOn = "[NetAdapterBinding]NetDeploy6"
+        InterfaceAlias = $AdapterName
         AddressFamily = "IPv6"
     }
 
-    #Script NetAdapterVisibility.psm1
+    NetAdapterBinding NetDeploy4
+    {
+        DependsOn = "[NetAdapterName]NetDeploy"
+        InterfaceAlias = $AdapterName
+        ComponentId    = 'ms_tcpip'
+        State          = 'Enabled'
+    }
+
+    NetAdapterBinding NetDeploy4
+    {
+        DependsOn = "[NetAdapterName]NetDeploy"
+        InterfaceAlias = $AdapterName
+        ComponentId    = 'ms_tcpip6'
+        State          = 'Enabled'
+    }
+
+    Script NetDeploy
+    {
+        SetScript = {
+            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
+
+            $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
+                Where-Object { $_.DriverDesc -like "*$svcname*" } |
+                    Select-Object DriverDesc, PSPath
+            
+            New-ItemProperty $net.PSPath -name '*NdisDeviceType' -propertytype dword -value 1 | Out-Null
+        }
+        GetScript = {
+            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
+
+            $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
+                Where-Object { $_.DriverDesc -like "*$svcname*" } |
+                    Select-Object DriverDesc, PSPath
+
+            return @{ Result = $net }
+        }
+        TestScript = {
+            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
+
+            $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
+                Where-Object { $_.DriverDesc -like "*$svcname*" } |
+                    Select-Object DriverDesc, PSPath
+
+            return (Get-ItemProperty -Path $net.PSPath -Name '*NdisDeviceType')
+        }
+
+        DependsOn = "[DefaultGatewayAddress]NetDeploy4","[DefaultGatewayAddress]NetDeploy4"
+    }
 }
 
 <#
@@ -99,7 +149,7 @@ Configuration NetDeployIT
         DnsServerAddress ITv4
         {
             DependsOn = "[NetDeploy]IT"
-            InterfaceAlias = "Miniport"
+            InterfaceAlias = $AdapterName
             AddressFamily = "IPv4"
             Address = "25.19.19.115","25.17.102.96"
             Validate = $true
@@ -108,7 +158,7 @@ Configuration NetDeployIT
         DnsServerAddress ITv6
         {
             DependsOn = "[NetDeploy]IT"
-            InterfaceAlias = "Miniport"
+            InterfaceAlias = $AdapterName
             AddressFamily = "IPv6"
             Address = '2620:9b::1913:1373','2620:9b::1911:6660'
             Validate = $false
@@ -117,7 +167,7 @@ Configuration NetDeployIT
         DnsConnectionSuffix IT
         {
             DependsOn = "[DnsServerAddress]ITv4","[DnsServerAddress]ITv6"
-            InterfaceAlias = "Miniport"
+            InterfaceAlias = $AdapterName
             ConnectionSpecificSuffix = "Mayflower.IT"
             RegisterThisConnectionsAddress = $false
         }
@@ -125,7 +175,7 @@ Configuration NetDeployIT
         NetBios NetDeploy
         {
             DependsOn = "[DnsConnectionSuffix]IT"
-            InterfaceAlias = "Miniport"
+            InterfaceAlias = $AdapterName
             Setting = "Disable"
 }   }   }
 
