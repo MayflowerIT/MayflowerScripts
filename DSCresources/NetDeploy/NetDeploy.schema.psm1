@@ -102,7 +102,7 @@ Configuration NetDeploy
     Script NetDeploy
     {
         SetScript = {
-            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
+            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
                 Where-Object { $_.DriverDesc -like "*$svcname*" } |
@@ -112,7 +112,7 @@ Configuration NetDeploy
             Register-DnsClient
         }
         GetScript = {
-            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
+            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
                 Where-Object { $_.DriverDesc -like "*$svcname*" } |
@@ -121,7 +121,7 @@ Configuration NetDeploy
             return @{ Result = $net }
         }
         TestScript = {
-            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$NetAdapterClass}\*"
+            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
                 Where-Object { $_.DriverDesc -like "*$svcname*" } |
