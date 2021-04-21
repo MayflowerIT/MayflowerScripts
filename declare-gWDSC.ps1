@@ -30,7 +30,7 @@ Desired State for Managed Servers by Mayflower
 #>
 Configuration gW
 {   #[CmdletBinding()]
-    Param(
+<#    Param(
         [ValidateNotNullOrEmpty()]
         [String]
         $OPSINSIGHTS_WS_ID,
@@ -61,7 +61,14 @@ Configuration gW
         #[Uri]$NetDeployUri              = Get-AutomationVariable -Name "DEPLOYURI"
         #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
     )#Param
-
+#>
+$OPSINSIGHTS_WS_ID = Get-AutomationVariable -Name "OPSINSIGHTS_WS_ID"
+$OPSINSIGHTS_WS_KEY = Get-AutomationVariable -Name "OPSINSIGHTS_WS_KEY"
+$OPSINSIGHTS_PID = Get-AutomationVariable -Name "OPSINSIGHTS_PID"
+$RslDisplayName = Get-AutomationVariable -Name "RSLDN"
+$RslUri = Get-AutomationVariable -Name "RSLURI"
+$NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
+<##>
     #$OIPackageLocalPath = Join-Path $SystemSixteen "MMASetup-AMD64.exe"
     $RslName            = ($RslDisplayName -replace ' ','')
     $RslService         = ($RslName -replace '[aeiou]','')
@@ -215,7 +222,7 @@ Configuration gW
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
-
+<##>
         foreach ($Site in $Node.Sites.GetEnumerator())
         {
             $SiteName = $Site.Key
@@ -274,7 +281,7 @@ Configuration gW
                 Name = $SiteName
                 DependsOn = "[ADReplicationSite]$NodeName"
             }
-        }
+        }#>
         ADReplicationSubnet $NodeName
         {
             Name = '10.'+($Node.ClientIndex)+'.32.0/20'
@@ -323,7 +330,7 @@ Configuration gW
         {
             ForestName                  = $Node.DNSName
             UserPrincipalNameSuffix     = $Node.ExternalDomains
-            ServicePrincipalNameSuffix  = $Node.InternalDomains
+            ServicePrincipalNameSuffix  = $DNSName,$Node.InternalDomains
             TombstoneLifetime           = 2401 # 6 and a half years
 
             DependsOn = "[WaitForAny]PDCe"
