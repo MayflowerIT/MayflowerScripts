@@ -37,15 +37,15 @@ Configuration gW
 <##>    Param(
         [ValidateNotNullOrEmpty()]
         [String]
-        $OPSINSIGHTS_WS_ID,
+        $OPSINSIGHTS_WS_ID = $OPSINSIGHTS_WS_ID,
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $OPSINSIGHTS_WS_KEY,
+        $OPSINSIGHTS_WS_KEY = $OPSINSIGHTS_WS_KEY,
 
         [ValidateNotNullOrEmpty()]
         [Guid]
-        $OPSINSIGHTS_PID,
+        $OPSINSIGHTS_PID = $OPSINSIGHTS_PID,
 
         #[String]$RslDDP             = Get-AutomationVariable -Name "RSLDDP",
         #[String]$RslDDCP            = Get-AutomationVariable -Name "RSLDDCP",
@@ -54,14 +54,14 @@ Configuration gW
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $RslDisplayName,
+        $RslDisplayName = $RslDisplayName,
         [ValidateNotNullOrEmpty()]
         [Uri]
-        $RslUri,
+        $RslUri = $RslUri,
 
         [ValidateNotNullOrEmpty()]
         [String]
-        $NetDeployID
+        $NetDeployID = $NetDeployID
         #[Uri]$NetDeployUri              = Get-AutomationVariable -Name "DEPLOYURI"
         #[Guid]$NetDeployPid             = Get-AutomationVariable -Name "DEPLOYPID"
     )#Param
