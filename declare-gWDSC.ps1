@@ -229,7 +229,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForADDomain]$NodeName"
         }
-
+<#
         foreach ($Site in $Node.Sites.GetEnumerator())
         {
             $SiteName = $Site.Key
@@ -281,7 +281,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
                     DependsOn = "[ADReplicationSite]$SiteName"
                 }
-            }#>
+            }<#
 
             ADReplicationSite $SiteName
             {
