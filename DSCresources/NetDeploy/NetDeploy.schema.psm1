@@ -43,6 +43,7 @@ Configuration NetDeploy
     NetAdapterName NetDeploy
     {
         DependsOn = "[Service]NetDeploy"
+        Status = 'Up' # Ignore disconnected or disabled adapters
         NewName = $AdapterName
         DriverDescription = "LogMeIn $svcname Virtual Ethernet Adapter"
     }
