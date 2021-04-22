@@ -1,6 +1,6 @@
 ﻿
 @{
-    ModuleVersion = '0.6.7'
+    ModuleVersion = '0.6.8'
     GUID = '7f189a65-2fc1-4970-b864-266b8aadff29'
     
     Author = 'John D Pell'
@@ -8,7 +8,7 @@
     Copyright = '(c) 2020 gaelicWizard.LLC. All rights reserved.'
     
     # Description of the functionality provided by this module
-    # Description = ''
+    Description = 'Scripts, modules, DSC resources, and assorted errata'
     
     # Minimum version of the Windows PowerShell engine required by this module
     PowerShellVersion = '5.0'
