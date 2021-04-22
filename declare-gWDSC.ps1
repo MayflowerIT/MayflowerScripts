@@ -219,6 +219,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
                     Set-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -Type String -Value $MyIP.IPAddress
                     Remove-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name ListenAddresses -ErrorAction SilentlyContinue
                 }
+                Restart-Service -Name DNS
                 Register-DnsClient
             }
 
