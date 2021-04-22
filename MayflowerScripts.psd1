@@ -1,6 +1,6 @@
 ﻿
 @{
-    ModuleVersion = '0.6.9'
+    ModuleVersion = '0.7.0'
     GUID = '7f189a65-2fc1-4970-b864-266b8aadff29'
     
     Author = 'John D Pell'
