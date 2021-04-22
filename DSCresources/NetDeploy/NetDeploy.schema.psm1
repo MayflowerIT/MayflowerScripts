@@ -106,7 +106,7 @@ Configuration NetDeploy
             $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$using:svcname*" } |
+                Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
                     Select-Object DriverDesc, PSPath
             
             New-ItemProperty $net.PSPath -name '*NdisDeviceType' -propertytype dword -value 1 | Out-Null
@@ -116,7 +116,7 @@ Configuration NetDeploy
             $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$using:svcname*" } |
+                Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
                     Select-Object DriverDesc, PSPath
 
             return @{ Result = $net }
@@ -125,7 +125,7 @@ Configuration NetDeploy
             $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$using:svcname*" } |
+                Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
                     Select-Object DriverDesc, PSPath
 
             return (Get-ItemProperty -Path $net.PSPath -Name '*NdisDeviceType')
