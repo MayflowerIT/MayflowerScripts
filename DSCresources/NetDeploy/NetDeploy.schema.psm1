@@ -16,7 +16,7 @@ Configuration NetDeploy
         [String]$DeployId,
         [Uri]$Path = $NetDeployUri,
         [Guid]$ProductId = $NetDeployProductId,
-        [String]$AdapterName = "Miniport"
+        [String]$AdapterName = "EPN Miniport"
     )
     $svcname = $Path.Segments[1].Split(".")[0]
 
