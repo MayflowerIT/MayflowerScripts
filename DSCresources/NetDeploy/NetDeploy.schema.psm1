@@ -128,7 +128,7 @@ Configuration NetDeploy
                 Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
                     Select-Object DriverDesc, PSPath
 
-            return (Get-ItemProperty -Path $net.PSPath -Name '*NdisDeviceType')
+            return (Get-ItemProperty -Path $net.PSPath -Name '*NdisDeviceType' -ErrorAction SilentlyContinue)
         }
 
         DependsOn = "[DefaultGatewayAddress]NetDeploy4","[DefaultGatewayAddress]NetDeploy4"
