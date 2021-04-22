@@ -5,7 +5,7 @@
         RootModule = 'NetDeploy.schema.psm1'
         
         # Version number of this module.
-        ModuleVersion = '1.0'
+        ModuleVersion = '2.0'
         
         # ID used to uniquely identify this module
         GUID = '81664d7b-6733-4134-bd4d-ea9c82a9b047'
