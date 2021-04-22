@@ -124,7 +124,7 @@ Configuration NetDeploy
             $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$svcname*" } |
+                Where-Object { $_.DriverDesc -like "*$using:svcname*" } |
                     Select-Object DriverDesc, PSPath
 
             return (Get-ItemProperty -Path $net.PSPath -Name '*NdisDeviceType')
