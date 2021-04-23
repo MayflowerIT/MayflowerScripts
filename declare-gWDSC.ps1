@@ -196,14 +196,15 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             } }
             TestScript = {
                 $State = [scriptblock]::Create($GetScript).Invoke()
-                #$MyIP = $State['CurrentIP'].IPAddress
+                #$MyIP = $State.CurrentIP | select -ExpandProperty IPAddress
                 $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue | select -ExpandProperty IPAddress
-                #$PublishedIP = $State['Result'] | select -ExpandProperty PublishAddresses
+                #$PublishedIP = $State.Result | select -ExpandProperty PublishAddresses
                 $PublishedIP = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue | select -ExpandProperty PublishAddresses
 
-                #foreach ($IP in $State['CurrentIP'])
+                #foreach ($IP in $State.CurrentIP)
                 #{
-                    #
+                    #foreach ($PA in $State.Result.Split(" "))
+                    #{}
                 #}
 
                 if (($null -ne "$MyIP") -and ("$MyIP" -like "$PublishedIP"))
