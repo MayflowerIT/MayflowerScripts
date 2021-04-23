@@ -103,7 +103,7 @@ Configuration NetDeploy
     Script NetAdapterVisibility
     {
         SetScript = {
-            $NA = [scriptblock]::Create($GetScript).Invoke("*$($using:svcname)*")
+            $NA = [scriptblock]::Create($GetScript).Invoke()
             #$navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
             #$net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
@@ -115,9 +115,7 @@ Configuration NetDeploy
             Register-DnsClient
         }
         GetScript =  {
-            Param(
-                $Description = "*$($using:svcname)*"
-            )
+            $Description = "*$($using:svcname)*"
         
             $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
             $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
@@ -135,9 +133,8 @@ Configuration NetDeploy
                 PSPath = $NA | select -ExpandProperty PSPath 
             }
         } 
-        
         TestScript = {
-            $NA = [scriptblock]::Create($GetScript).Invoke("*$($using:svcname)*")
+            $NA = [scriptblock]::Create($GetScript).Invoke()
 
             return ([int]'1' -eq [int]($NA.'*NdisDeviceType'))
         }
