@@ -136,7 +136,7 @@ Configuration NetDeploy
         TestScript = {
             $NA = [scriptblock]::Create($GetScript).Invoke()
 
-            return ([int]'1' -eq [int]($NA.'*NdisDeviceType'))
+            return ([int]'1' -eq [int]($NA | select -ExpandProperty '*NdisDeviceType'))
         }
 
         DependsOn = "[DefaultGatewayAddress]NetDeploy4","[DefaultGatewayAddress]NetDeploy6"
