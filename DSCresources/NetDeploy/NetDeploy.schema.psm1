@@ -127,16 +127,16 @@ Configuration NetDeploy
             Select-Object DriverDesc, '*NdisDeviceType', PSPath -ErrorAction SilentlyContinue
 
             return @{ 
-                Result = "$($NA | select -ExpandProperty DriverDesc): $($NA | select -ExpandProperty '*NdisDeviceType')"
-                DriverDesc = $NA | select -ExpandProperty DriverDesc
-                '*NdisDeviceType' = $NA | select -ExpandProperty '*NdisDeviceType'
-                PSPath = $NA | select -ExpandProperty PSPath 
+                Result = "$($NA | select -ExpandProperty DriverDesc -ErrorAction SilentlyContinue): $($NA | select -ExpandProperty '*NdisDeviceType' -ErrorAction SilentlyContinue)"
+                DriverDesc = $NA | select -ExpandProperty DriverDesc -ErrorAction SilentlyContinue
+                '*NdisDeviceType' = $NA | select -ExpandProperty '*NdisDeviceType' -ErrorAction SilentlyContinue
+                PSPath = $NA | select -ExpandProperty PSPath  -ErrorAction SilentlyContinue
             }
         } 
         TestScript = {
             $NA = [scriptblock]::Create($GetScript).Invoke()
 
-            return ([int]'1' -eq [int]($NA | select -ExpandProperty '*NdisDeviceType'))
+            return ([int]'1' -eq [int]($NA | select -ExpandProperty '*NdisDeviceType' -ErrorAction SilentlyContinue))
         }
 
         DependsOn = "[DefaultGatewayAddress]NetDeploy4","[DefaultGatewayAddress]NetDeploy6"
