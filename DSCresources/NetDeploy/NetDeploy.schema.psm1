@@ -100,38 +100,49 @@ Configuration NetDeploy
         State          = 'Enabled'
     }
 
-    Script NetDeploy
+    Script NetAdapterVisibility
     {
         SetScript = {
-            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
+            $NA = [scriptblock]::Create($GetScript).Invoke("*$($using:svcname)*")
+            #$navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
-            $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
-                    Select-Object DriverDesc, PSPath
+            #$net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
+            #    Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
+            #        Select-Object DriverDesc, PSPath
             
-            New-ItemProperty $net.PSPath -name '*NdisDeviceType' -propertytype dword -value 1 | Out-Null
+            #New-ItemProperty $net.PSPath -name '*NdisDeviceType' -propertytype dword -value 1 | Out-Null
+            New-ItemProperty $NA.PSPath -Name '*NdisDeviceType' -PropertyType dword -Value 1 -Force
             Register-DnsClient
         }
-        GetScript = {
-            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
+        GetScript =  {
+            Param(
+                $Description = "*$($using:svcname)*"
+            )
+        
+            $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
+            $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
+            $NetworkAdapterInstances = Join-Path $RegisteredDriverClasses "{$NetworkAdapterClass}"
+            $NAK = Join-Path $NetworkAdapterInstances "*"
+        
+            $NA = Get-ItemProperty -Path $NAK -ErrorAction SilentlyContinue | 
+            Where-Object DriverDesc -like $Description -ErrorAction SilentlyContinue |
+            Select-Object DriverDesc, '*NdisDeviceType', PSPath -ErrorAction SilentlyContinue
 
-            $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
-                    Select-Object DriverDesc, PSPath
-
-            return @{ Result = $net }
-        }
+            return @{ 
+                Result = "$($NA.DriverDesc): $($NA.'*NdisDeviceType')"
+                DriverDesc = $NA.DriverDesc
+                '*NdisDeviceType' = $NA.'*NdisDeviceType'
+                PSPath = $NA.PSPath 
+            }
+        } 
+        
         TestScript = {
-            $navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
+            $NA = [scriptblock]::Create($GetScript).Invoke("*$($using:svcname)*")
 
-            $net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-                Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
-                    Select-Object DriverDesc, PSPath
-
-            return (Get-ItemProperty -Path $net.PSPath -Name '*NdisDeviceType' -ErrorAction SilentlyContinue)
+            return ([int]'1' -eq [int]($NA.'*NdisDeviceType'))
         }
 
-        DependsOn = "[DefaultGatewayAddress]NetDeploy4","[DefaultGatewayAddress]NetDeploy4"
+        DependsOn = "[DefaultGatewayAddress]NetDeploy4","[DefaultGatewayAddress]NetDeploy6"
     }
 }
 
