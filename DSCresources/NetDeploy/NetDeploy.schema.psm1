@@ -64,11 +64,11 @@ Configuration NetDeploy
         InterfaceMetric = 9000
     }
 
-    NetConnectionProfile NetDeploy
-    {
-        InterfaceAlias = $AdapterName
-        NetworkCategory = "Private"
-    }
+#    NetConnectionProfile NetDeploy
+ #   {
+  #      InterfaceAlias = $AdapterName
+   #     NetworkCategory = "Private"
+    #}
 
     DefaultGatewayAddress NetDeploy4
     {
