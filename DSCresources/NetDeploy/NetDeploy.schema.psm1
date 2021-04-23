@@ -129,10 +129,10 @@ Configuration NetDeploy
             Select-Object DriverDesc, '*NdisDeviceType', PSPath -ErrorAction SilentlyContinue
 
             return @{ 
-                Result = "$($NA.DriverDesc): $($NA.'*NdisDeviceType')"
-                DriverDesc = $NA.DriverDesc
-                '*NdisDeviceType' = $NA.'*NdisDeviceType'
-                PSPath = $NA.PSPath 
+                Result = "$($NA | select -ExpandProperty DriverDesc): $($NA | select -ExpandProperty '*NdisDeviceType')"
+                DriverDesc = $NA | select -ExpandProperty DriverDesc
+                '*NdisDeviceType' = $NA | select -ExpandProperty '*NdisDeviceType'
+                PSPath = $NA | select -ExpandProperty PSPath 
             }
         } 
         
