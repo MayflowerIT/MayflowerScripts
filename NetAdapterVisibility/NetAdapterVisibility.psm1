@@ -46,18 +46,25 @@ Param(
 #https://docs.microsoft.com/en-us/windows-hardware/drivers/network/keywords-not-displayed-in-the-user-interface
 #https://community.idera.com/database-tools/powershell/powertips/b/tips/posts/hiding-network-adapter
 
+
+
 Function Get-NetAdapterVisibility
-{
+$GetScript = {
     Param(
-        $Description = "*"
+        $Description = $using:svcname
     )
 
-    $navKey = 'Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{4D36E972-E325-11CE-BFC1-08002BE10318}\*'
+    $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
+    $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
+    $NetworkAdapterInstances = Join-Path $RegisteredDriverClasses "{$NetworkAdapterClass}"
+    $NAK = Join-Path $NetworkAdapterInstances "*"
 
-    Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-    Where-Object { $_.DriverDesc -like $Description } |
-    Select-Object DriverDesc, PSPath
+    $NA = Get-ItemProperty -Path $NAK -ErrorAction SilentlyContinue | 
+    Where-Object DriverDesc -like $Description -ErrorAction SilentlyContinue
+
+    $NA | Select-Object DriverDesc, '*NdisDeviceType', PSPath
 }
+$State = [scriptblock]::Create($GetScript).Invoke()
 
 Function Set-NetAdapterVisibility
 {
@@ -80,3 +87,5 @@ if($true -eq $Online)
 {
     Get-NetAdapterVisibility -Description "*Hamachi*" | Set-NetAdapterVisibility -ignoreNLA
 }
+
+
