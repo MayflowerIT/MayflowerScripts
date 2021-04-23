@@ -1,7 +1,7 @@
 
 <#PSScriptInfo
 
-.VERSION 1.0
+.VERSION 0.2
 
 .GUID d78d50d5-52bf-4908-a44a-0f8bc989c921
 
@@ -49,7 +49,7 @@ Param(
 
 
 Function Get-NetAdapterVisibility
-$GetScript = {
+{
     Param(
         $Description = $using:svcname
     )
@@ -64,7 +64,7 @@ $GetScript = {
 
     $NA | Select-Object DriverDesc, '*NdisDeviceType', PSPath
 }
-$State = [scriptblock]::Create($GetScript).Invoke()
+#$State = [scriptblock]::Create($GetScript).Invoke()
 
 Function Set-NetAdapterVisibility
 {
