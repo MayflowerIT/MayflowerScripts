@@ -6,8 +6,9 @@
 #Requires -Module xDNSServer
 #Requires -Module xDHCPServer
 
-New-Variable -Option Constant -Name DDP   -Value "{31B2F340-016D-11D2-945F-00C04FB984F9}"
-New-Variable -Option Constant -Name DDCP  -Value "{6AC1786C-016F-11D2-945F-00C04FB984F9}"
+New-Variable -Option Constant -Name DDP    -Value ([guid]"31B2F340-016D-11D2-945F-00C04FB984F9")
+New-Variable -Option Constant -Name DDCP   -Value ([guid]"6AC1786C-016F-11D2-945F-00C04FB984F9")
+New-Variable -Option Constant -Name KRBTGT -Value ([int]"502")
 
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
 
@@ -138,6 +139,12 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 #ensure scopes exist, DCs have DHCP, set to sync relationship, &c.
 #}
 
+        #ADDSOU $NodeName
+        #{
+        #    Get-ADUser -Identity "S-1-5-21-1656681450-3381289342-4079706298-502"
+        #    
+        #}
+
         ADGroup ESXAdmins
         {
             GroupName  = 'ESX Admins'
@@ -197,9 +204,9 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             TestScript = {
                 $State = [scriptblock]::Create($GetScript).Invoke()
                 #$MyIP = $State.CurrentIP | select -ExpandProperty IPAddress
-                $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue | select -ExpandProperty IPAddress
+                $MyIP = Get-NetIPAddress -PrefixOrigin Manual -AddressFamily IPv4 -ErrorAction SilentlyContinue | select -ExpandProperty IPAddress -ErrorAction SilentlyContinue
                 #$PublishedIP = $State.Result | select -ExpandProperty PublishAddresses
-                $PublishedIP = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue | select -ExpandProperty PublishAddresses
+                $PublishedIP = Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\DNS\Parameters -Name PublishAddresses -ErrorAction SilentlyContinue | select -ExpandProperty PublishAddresses -ErrorAction SilentlyContinue
 
                 #foreach ($IP in $State.CurrentIP)
                 #{
@@ -631,7 +638,7 @@ if ($true -eq $Online)
         $MyPrivateData = Resolve-Path "PrivateData"
     }
 
-	Import-AzAutomationDscConfiguration -SourcePath $MySourcePath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount 
+	Import-AzAutomationDscConfiguration -SourcePath $MySourcePath -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount
 
     $gWdsc = Import-PowerShellDataFile -Path (Join-Path $MyPrivateData "gWadds.psd1")
 	Start-AzAutomationDscCompilationJob -ResourceGroupName $MyResourceGroup -AutomationAccountName $MyAutomationAccount -ConfigurationName 'gW' -ConfigurationData $gWdsc
