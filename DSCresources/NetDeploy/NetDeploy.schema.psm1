@@ -108,9 +108,6 @@ Configuration NetDeploy
             $svcstatus = & "$svcbin" --cli
             $IPv4 = Get-NetIPAddress -InterfaceAlias ${using:AdapterName} -AddressFamily IPv4
 
-            #parse and return as dict
-
-            #$svcstats = $svcstatus -split '\r?\n'
             $svcstats = $($svcstatus -split '\r?\n').Trim()
             $svcaddr = $svcstats -like 'address*:*' -split ': ' -notlike 'address*' -split '\s' -notlike ''
             return @{
@@ -120,7 +117,6 @@ Configuration NetDeploy
                 pid = $svcstats -like 'pid*:*' -split ': ' -notlike 'pid*'
                 status = $svcstats -like 'status*:*' -split ': ' -notlike 'status*'
                 clientId = $svcstats -like 'client id*:*' -split ': ' -notlike 'client id*'
-                #address = @()
                 IPv4 = $svcaddr -like '25.*.*.*'
                 IPv6 = $svcaddr -like '2620:*:*'
                 nickname = $svcstats -like 'nickname*:*' -split ': ' -notlike 'nickname*'
