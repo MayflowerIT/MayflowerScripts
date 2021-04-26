@@ -1,7 +1,7 @@
 ﻿
 @{
         RootModule = 'NetDeploy.schema.psm1'
-        ModuleVersion = '3.0.5'
+        ModuleVersion = '3.1.0'
         GUID = '81664d7b-6733-4134-bd4d-ea9c82a9b047'
         
         Author = 'John D Pell'

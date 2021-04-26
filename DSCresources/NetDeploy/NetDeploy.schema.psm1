@@ -31,7 +31,7 @@ Configuration NetDeploy
 
     Service NetDeploy
     {
-        Name = "$($svcname)2Svc"
+        Name = "${svcname}2Svc"
         StartupType = 'Automatic'
         State = 'Running'
 
@@ -53,6 +53,7 @@ Configuration NetDeploy
         DependsOn = "[NetAdapterBinding]NetDeploy4"
         InterfaceAlias = $AdapterName
         AddressFamily = "IPv4"
+        #DHCP = 'Enabled' # a weird with hiding adapter visibility
         InterfaceMetric = 9000
     }
 
@@ -100,22 +101,63 @@ Configuration NetDeploy
         State          = 'Enabled'
     }
 
+    Script NetDeploy4
+    {
+        GetScript = {
+            $svcbin = Resolve-Path "${ENV:ProgramFiles(x86)}\*\x64\${using:svcname}-2.exe"
+            $svcstatus = & "$svcbin" --cli
+            $IPv4 = Get-NetIPAddress -InterfaceAlias ${using:AdapterName} -AddressFamily IPv4
+
+            #parse and return as dict
+
+            #$svcstats = $svcstatus -split '\r?\n'
+            $svcstats = $($svcstatus -split '\r?\n').Trim()
+            $svcaddr = $svcstats -like 'address*:*' -split ': ' -notlike 'address*' -split '\s' -notlike ''
+            return @{
+                Result = $svcstatus
+                IPAddress = $IPv4
+                Version = $svcstats -like 'version*:*' -split ': ' -notlike 'version*'
+                pid = $svcstats -like 'pid*:*' -split ': ' -notlike 'pid*'
+                status = $svcstats -like 'status*:*' -split ': ' -notlike 'status*'
+                clientId = $svcstats -like 'client id*:*' -split ': ' -notlike 'client id*'
+                #address = @()
+                IPv4 = $svcaddr -like '25.*.*.*'
+                IPv6 = $svcaddr -like '2620:*:*'
+                nickname = $svcstats -like 'nickname*:*' -split ': ' -notlike 'nickname*'
+                account = $svcstats -like 'account*:*' -split ': ' -notlike 'account*'
+            }
+        }
+        TestScript = {
+            $DHND = [scriptblock]::Create($GetScript).Invoke()
+
+            #TF: Service IP address is the current IP address live on the interface
+            return ($DHND.IPAddress -like $DHND.EPNv4)
+        }
+        SetScript = {
+            $DHND = [scriptblock]::Create($GetScript).Invoke()
+
+            & "$svcbin" --cli set-nick ${ENV:ComputerName}
+
+            New-NetIPAddress -InterfaceDescription $NA.DriverDesc `
+                -AddressFamily IPv4 `
+                -IPAddress $DHND.IPv4 `
+                -PrefixLength 8
+            
+            Register-DnsClient
+        }
+
+        DependsOn = "[Script]NetAdapterVisibility"
+    }
     Script NetAdapterVisibility
     {
         SetScript = {
             $NA = [scriptblock]::Create($GetScript).Invoke()
-            #$navKey = "Registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Class\{$using:NetAdapterClass}\*"
 
-            #$net = Get-ItemProperty -Path $navKey -ErrorAction SilentlyContinue | 
-            #    Where-Object { $_.DriverDesc -like "*$using:svcname*" } -ErrorAction SilentlyContinue |
-            #        Select-Object DriverDesc, PSPath
-            
-            #New-ItemProperty $net.PSPath -name '*NdisDeviceType' -propertytype dword -value 1 | Out-Null
             New-ItemProperty $NA.PSPath -Name '*NdisDeviceType' -PropertyType dword -Value 1 -Force
-            Register-DnsClient
         }
         GetScript =  {
-            $Description = "*$($using:svcname)*"
+            $Description = "*${using:svcname}*"
+            $svcbin = ls "${ENV:ProgramFiles(x86)}\*\x64\${using:svcname}-2.exe"
         
             $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
             $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
