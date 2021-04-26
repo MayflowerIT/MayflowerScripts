@@ -153,7 +153,6 @@ Configuration NetDeploy
         }
         GetScript =  {
             $Description = "*${using:svcname}*"
-            $svcbin = ls "${ENV:ProgramFiles(x86)}\*\x64\${using:svcname}-2.exe"
         
             $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
             $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
