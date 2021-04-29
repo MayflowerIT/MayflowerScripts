@@ -8,7 +8,8 @@
 
 New-Variable -Option Constant -Name DDP    -Value ([guid]"31B2F340-016D-11D2-945F-00C04FB984F9")
 New-Variable -Option Constant -Name DDCP   -Value ([guid]"6AC1786C-016F-11D2-945F-00C04FB984F9")
-New-Variable -Option Constant -Name KRBTGT -Value ([int]"502")
+
+Import-Module ./gWsids.psm1
 
 New-Variable -Option ReadOnly -Name SystemSixteen -Value (Join-Path $env:SystemRoot "System")
 
@@ -93,11 +94,43 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
     Import-DscResource -ModuleName xDNSServer # M$-preview
     Import-DscResource -ModuleName xDHCPServer # M$-preview
 
-    #Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
-    Node $AllNodes.NodeName
+    Node $AllNodes.Where{$_.Role -eq "ADDS"}.NodeName
+    #Node $AllNodes.NodeName
     { # Active Directory Domain Services, Domain Controller
         $DomainComponents = $Node.DNSName.Split(".")
         $NodeDistinguishedName = "DC="+ ($DomainComponents -join ",DC=")
+
+        User ASiUser
+        {
+            Username = "asiuser"
+            DisplayName = "ASi Networks, Inc."
+            Disabled = $true
+            #Ensure = 'Absent'
+        }
+
+        User ASiAdmin
+        {
+            Username = "asiadmin"
+            DisplayName = "ASi Networks, Inc."
+            Disabled = $true
+            #Ensure = 'Absent'
+        }
+
+        User Mayflower
+        {
+            Username = "mayflower"
+            DisplayName = "Mayflower Information Services & Technology"
+            Disabled = $true
+            #Ensure = 'Absent'
+        }
+
+        User Binovia
+        {
+            Username = "binovia"
+            DisplayName = "Binovia Corp."
+            Disabled = $true
+            #Ensure = 'Absent'
+        }
 
         xService RslService
         { 
@@ -114,7 +147,11 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         NetDeploy ADDS
         {
             DeployId = $NetDeployID
+            '*NdisDeviceType' = '0'
         }
+
+
+        # SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\ set 'DisabledComponents' Dword dec 33, hex 21: prefer IPv4, disalbe tunnel-6.
 
 #        ADDSDNS DNS
  #       {
@@ -149,7 +186,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         {
             GroupName  = 'ESX Admins'
             DisplayName = "ESXi Administrators"
-            Description = "Members have administrative privileges on ESXi hosts joined to this domain."
+            Description = "Members have administrative privileges on VMware ESXi hosts joined to this domain."
             GroupScope = 'DomainLocal'
             RestoreFromRecycleBin = $true
 
@@ -393,13 +430,17 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             DependsOn = "[WaitForADDomain]$NodeName"
         }
 
-        Group Administrators
+        if($Node.DomainSid)
         {
-            GroupName = 'S-1-5-32-544'
-            MembersToInclude= 'S-1-5-9'
+            Group Administrators
+            {
+                GroupName = 'S-1-5-32-544'
+                MembersToInclude= 'S-1-5-9'
+                #Members= "$($Node.DomainSid)-$ridDA", "$($Node.DomainSid)-$ridEA", "$ERWDC"
+                #$ERWDC = [System.Security.Principal.SecurityIdentifier]'S-1-5-9'
 
-            DependsOn = "[WaitForADDomain]$NodeName" #,"[WindowsFeature]ADDSt"
-        }
+                DependsOn = "[WaitForADDomain]$NodeName" #,"[WindowsFeature]ADDSt"
+        }   }
 
         ADManagedServiceAccount AGPM
         {
@@ -493,7 +534,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
             State = "Running"
             StartupType = "Automatic"
 
-            DependsOn = "[WindowsFeature]ADDS"
+            DependsOn = "[WindowsFeature]ADDS" # how to make this only go if DCPROMO is completed?
         }
 
         ADKDSKey KDS
