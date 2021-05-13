@@ -1,10 +1,14 @@
-# IgnoreList is a UTF-8 encoded .txt file that helps you specify single files, paths and rules 
+﻿# IgnoreList is a UTF-8 encoded .txt file that helps you specify single files, paths and rules 
 # for ignoring during the synchronization job. It supports "?" and "*" wildcard symbols.
 #
 #
 # OS generated files #
 $RECYCLE.BIN
 $Recycle.Bin
+System Volume Information
+ehthumbs.db
+desktop.ini
+Thumbs.db
 lost+found
 .DocumentRevisions-V100
 .TemporaryItems
@@ -15,9 +19,6 @@ lost+found
 .Spotlight-V100
 .Trashes
 .Trash-*
-ehthumbs.db
-desktop.ini
-Thumbs.db
 ~*
 *~
 .~lock.*
@@ -28,14 +29,29 @@ Thumbs.db
 *.swn
 *.swp
 *.swo
-.dropbox
-.dropbox.attr
 *.crdownload
-@eaDir
-@SynoResource
 .@__thumb
 .thumbnails
 ._*
+*.tmp
+*.tmp.chck
+.dropbox
+.dropbox.attr
+.dropbox.cache
+.streams
+.caches
+.Statuses
+.teamdrive
+.SynologyWorkingDirectory
+@eaDir
+@SynoResource
+#SynoRecycle
+#snapshot
+#recycle
+.!@#$recycle
+DfsrPrivate
 
-# GIT
+
+.Download
 .git
+
