@@ -38,7 +38,7 @@ Configuration NetDeploy
 		[DDInstallCharacteristics]$Characteristics = [DDInstallCharacteristics]::noChange,
 		[String]$AdapterName = "EPN Miniport"
 	)
-	$svcvnd  = $Path.Host.Split(".")[1]
+	$svcvndr = $Path.Host.Split(".")[1]
 	$svcname = $Path.Segments[1].Split(".")[0]
 	$svcbin = Resolve-Path "${ENV:ProgramFiles(x86)}\*\x64\${svcname}-2.exe"
 
@@ -67,7 +67,7 @@ Configuration NetDeploy
 		DependsOn = "[Service]NetDeploy"
 		Status = 'Up' # Ignore disconnected or disabled adapters
 		NewName = $AdapterName
-		DriverDescription = "$svcvnd $svcname Virtual Ethernet Adapter"
+		DriverDescription = "$svcvndr $svcname Virtual Ethernet Adapter"
 		#IncludeHidden = $true
 	}
 
