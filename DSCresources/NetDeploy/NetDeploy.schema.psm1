@@ -157,7 +157,7 @@ Configuration NetDeploy
 
 			& "$using:svcbin" --cli set-nick ${ENV:ComputerName}
 
-			if(-not $EPND)
+			if($true -eq $EPND)
 			{
 				New-NetIPAddress -InterfaceDescription $NA.DriverDesc `
 					-AddressFamily IPv4 `
