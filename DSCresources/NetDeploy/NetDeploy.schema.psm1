@@ -1,6 +1,24 @@
 ﻿
+#Requires -Version 5
 #Requires -Module PSDscResources
 New-Variable -Option Constant -Name NetAdapterClass -Value ([guid]"4D36E972-E325-11CE-BFC1-08002BE10318")
+
+[Flags()] # https://community.idera.com/database-tools/powershell/powertips/b/tips/posts/managing-bit-flags-part-4
+enum DDInstallCharacteristics
+{ # https://docs.microsoft.com/en-us/windows-hardware/drivers/network/ddinstall-section-in-a-network-inf-file
+    noChange = 0x0
+    NCF_Virtual = 0x1
+    NCF_Software_Enumerated = 0x2
+    NCF_Physical = 0x4
+    NCF_Hidden = 0x8
+    NCF_NO_SERVICE = 0x10
+    NCF_NOT_USER_REMOVABLE = 0x20
+    NCF_HAS_UI = 0x80
+    NCF_FILTER = 0x400
+    NCF_NDIS_PROTOCOL = 0x4000
+    NCF_LW_FILTER = 0x40000
+}
+
 
 $AzAutomation = Get-Command -Name "Get-AutomationVariable" -ErrorAction SilentlyContinue
 if($AzAutomation)
@@ -16,9 +34,13 @@ Configuration NetDeploy
         [String]$DeployId,
         [Uri]$Path = $NetDeployUri,
         [Guid]$ProductId = $NetDeployProductId,
+        [Int]$NdisDeviceType = '0',
+        [DDInstallCharacteristics]$Characteristics = [DDInstallCharacteristics]::noChange,
         [String]$AdapterName = "EPN Miniport"
     )
+    $svcvnd  = $Path.Host.Split(".")[1]
     $svcname = $Path.Segments[1].Split(".")[0]
+    $svcbin = Resolve-Path "${ENV:ProgramFiles(x86)}\*\x64\${svcname}-2.exe"
 
     Import-DscResource -ModuleName PSDscResources # xPSDesiredStateConfiguration,
 
@@ -45,7 +67,8 @@ Configuration NetDeploy
         DependsOn = "[Service]NetDeploy"
         Status = 'Up' # Ignore disconnected or disabled adapters
         NewName = $AdapterName
-        DriverDescription = "LogMeIn $svcname Virtual Ethernet Adapter"
+        DriverDescription = "$svcvnd $svcname Virtual Ethernet Adapter"
+        #IncludeHidden = $true
     }
 
     NetIPInterface NetDeploy4
@@ -104,8 +127,7 @@ Configuration NetDeploy
     Script NetDeploy4
     {
         GetScript = {
-            $svcbin = Resolve-Path "${ENV:ProgramFiles(x86)}\*\x64\${using:svcname}-2.exe"
-            $svcstatus = & "$svcbin" --cli
+            $svcstatus = & "$using:svcbin" --cli
             $IPv4 = Get-NetIPAddress -InterfaceAlias ${using:AdapterName} -AddressFamily IPv4
 
             $svcstats = $($svcstatus -split '\r?\n').Trim()
@@ -126,39 +148,79 @@ Configuration NetDeploy
         TestScript = {
             $DHND = [scriptblock]::Create($GetScript).Invoke()
 
-            #TF: Service IP address is the current IP address live on the interface
-            return ($DHND.IPAddress -like $DHND.EPNv4)
+            #TF: Service IP address is the current IP address live on the interface?
+            return ($DHND.IPAddress -like $DHND.IPv4)
         }
         SetScript = {
             $DHND = [scriptblock]::Create($GetScript).Invoke()
+            $EPND = [scriptblock]::Create($TestScript).Invoke()
 
-            & "$svcbin" --cli set-nick ${ENV:ComputerName}
+            & "$using:svcbin" --cli set-nick ${ENV:ComputerName}
 
-            New-NetIPAddress -InterfaceDescription $NA.DriverDesc `
-                -AddressFamily IPv4 `
-                -IPAddress $DHND.IPv4 `
-                -PrefixLength 8
-            
+            if(-not $EPND)
+            {
+                New-NetIPAddress -InterfaceDescription $NA.DriverDesc `
+                    -AddressFamily IPv4 `
+                    -IPAddress $DHND.IPv4 `
+                    -PrefixLength 8
+            }
             Register-DnsClient
         }
 
-        DependsOn = "[Script]NetAdapterVisibility"
+        DependsOn = "[Script]NetAdapterCharacteristics"
+    }
+    Script NetAdapterCharacteristics
+    {
+        SetScript = {
+            $NA = [scriptblock]::Create($GetScript).Invoke()
+            $NAC = $NA.Characteristics
+
+            # DOES NOT WORK B/C NOT BITWISE: ITS ARITHMATIC $NAC += [DDInstallCharacteristics]::NCF_Hidden
+            $NAC = $NAC -bor $using:Characteristics # explicitly bitwise
+
+            Set-ItemProperty $NA.PSPath -Name 'Characteristics' -PropertyType Dword -Value $NAC -force
+        }
+        TestScript = {
+            $NA = [scriptblock]::Create($GetScript).Invoke()
+            $NAC = $NA.Characteristics
+
+            ($NAC -eq ($NAC -bor $using:Characteristics))
+        }
+        GetScript =  {
+            $Description = "*${using:svcname}*"
+
+            $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
+            $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
+            $NetworkAdapterInstances = Join-Path $RegisteredDriverClasses "{$NetworkAdapterClass}"
+            $NAK = Join-Path $NetworkAdapterInstances "*"
+
+            $NA = Get-ItemProperty -Path $NAK -ErrorAction SilentlyContinue | 
+            Where-Object DriverDesc -like $Description -ErrorAction SilentlyContinue |
+            Select-Object DriverDesc, 'Characteristics', PSPath -ErrorAction SilentlyContinue
+
+            return @{ 
+                Result = "$($NA | select -ExpandProperty DriverDesc -ErrorAction SilentlyContinue): $($NA | select -ExpandProperty 'Characteristics' -ErrorAction SilentlyContinue)"
+                DriverDesc = $NA | select -ExpandProperty DriverDesc -ErrorAction SilentlyContinue
+                'Characteristics' = [DDInstallCharacteristics]($NA | select -ExpandProperty 'Characteristics' -ErrorAction SilentlyContinue)
+                PSPath = $NA | select -ExpandProperty PSPath  -ErrorAction SilentlyContinue
+            }
+        } 
     }
     Script NetAdapterVisibility
     {
         SetScript = {
             $NA = [scriptblock]::Create($GetScript).Invoke()
 
-            New-ItemProperty $NA.PSPath -Name '*NdisDeviceType' -PropertyType dword -Value 1 -Force
+            New-ItemProperty $NA.PSPath -Name '*NdisDeviceType' -PropertyType Dword -Value $using:NdisDeviceType -Force
         }
         GetScript =  {
             $Description = "*${using:svcname}*"
-        
+
             $NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
             $RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
             $NetworkAdapterInstances = Join-Path $RegisteredDriverClasses "{$NetworkAdapterClass}"
             $NAK = Join-Path $NetworkAdapterInstances "*"
-        
+
             $NA = Get-ItemProperty -Path $NAK -ErrorAction SilentlyContinue | 
             Where-Object DriverDesc -like $Description -ErrorAction SilentlyContinue |
             Select-Object DriverDesc, '*NdisDeviceType', PSPath -ErrorAction SilentlyContinue
