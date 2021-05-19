@@ -187,7 +187,7 @@ Configuration NetDeploy
 			($NAC -eq ($NAC -bor $using:Characteristics))
 		}
 		GetScript =  {
-			$Description = "*${using:svcname}*"
+			$Description = "*$($using:svcname)*"
 
 			$NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
 			$RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
@@ -214,7 +214,7 @@ Configuration NetDeploy
 			New-ItemProperty $NA.PSPath -Name '*NdisDeviceType' -PropertyType Dword -Value $using:NdisDeviceType -Force
 		}
 		GetScript =  {
-			$Description = "*${using:svcname}*"
+			$Description = "*$($using:svcname)*"
 
 			$NetworkAdapterClass = [guid]"4D36E972-E325-11CE-BFC1-08002BE10318"
 			$RegisteredDriverClasses = "HKLM:\SYSTEM\CurrentControlSet\Control\Class"
