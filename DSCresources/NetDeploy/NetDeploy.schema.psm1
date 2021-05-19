@@ -128,7 +128,7 @@ Configuration NetDeploy
 	{
 		GetScript = {
 			$svcstatus = & "$using:svcbin" --cli
-			$IPv4 = Get-NetIPAddress -InterfaceAlias ${using:AdapterName} -AddressFamily IPv4
+			$IPv4 = Get-NetIPAddress -InterfaceAlias $using:AdapterName -AddressFamily IPv4
 
 			$svcstats = $($svcstatus -split '\r?\n').Trim()
 			$svcaddr = $svcstats -like 'address*:*' -split ': ' -notlike 'address*' -split '\s' -notlike ''
