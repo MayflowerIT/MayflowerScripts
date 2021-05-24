@@ -6,6 +6,10 @@
 #Requires -Module xDNSServer
 #Requires -Module xDHCPServer
 
+$BlankSecureString = New-Object System.Security.SecureString
+$NTSystem = New-Object System.Management.Automation.PSCredential ("NT Authority\SYSTEM", $BlankSecureString)
+
+
 New-Variable -Option Constant -Name DDP    -Value ([guid]"31B2F340-016D-11D2-945F-00C04FB984F9")
 New-Variable -Option Constant -Name DDCP   -Value ([guid]"6AC1786C-016F-11D2-945F-00C04FB984F9")
 
@@ -35,8 +39,7 @@ if($AzAutomation)
 Desired State for Managed Servers by Mayflower
 #>
 Configuration gW
-{   #[CmdletBinding()]
-<##>    Param(
+{   Param(
         [ValidateNotNullOrEmpty()]
         [String]
         $OPSINSIGHTS_WS_ID = $OPSINSIGHTS_WS_ID,
@@ -101,34 +104,42 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         $NodeDistinguishedName = "DC="+ ($DomainComponents -join ",DC=")
 
         User ASiUser
-        {
+        {   #DomainName = $Node.DNSName
             Username = "asiuser"
             DisplayName = "ASi Networks, Inc."
+            #CommonName
             Disabled = $true
+            #RestoreFromRecycleBin = $true
             #Ensure = 'Absent'
         }
 
         User ASiAdmin
-        {
+        {   #DomainName = $Node.DNSName
             Username = "asiadmin"
             DisplayName = "ASi Networks, Inc."
+            #CommonName
             Disabled = $true
+            #RestoreFromRecycleBin = $true
             #Ensure = 'Absent'
         }
 
         User Mayflower
-        {
+        {   #DomainName = $Node.DNSName
             Username = "mayflower"
-            DisplayName = "Mayflower Information Services & Technology"
+            DisplayName = "Mayflower IS&T"
+            #CommonName
             Disabled = $true
+            #RestoreFromRecycleBin = $true
             #Ensure = 'Absent'
         }
 
         User Binovia
-        {
+        {   #DomainName = $Node.DNSName
             Username = "binovia"
             DisplayName = "Binovia Corp."
+            #CommonName
             Disabled = $true
+            #RestoreFromRecycleBin = $true
             #Ensure = 'Absent'
         }
 
@@ -147,9 +158,22 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         NetDeploy ADDS
         {
             DeployId = $NetDeployID
-            '*NdisDeviceType' = '0'
+            NdisDeviceType = '0'
         }
 
+        ADObjectPermissionEntry RslDdp
+        {
+            Ensure                             = 'Present'
+            Path                               = 'CN=ROLE01,CN=Computers,DC=contoso,DC=com'
+            IdentityReference                  = 'CONTOSO\CLUSTER01$'
+            ActiveDirectoryRights              = 'GenericAll'
+            AccessControlType                  = 'Allow'
+            ObjectType                         = '00000000-0000-0000-0000-000000000000'
+            ActiveDirectorySecurityInheritance = 'None'
+            InheritedObjectType                = '00000000-0000-0000-0000-000000000000'
+        }
+
+        # CN=SYSVOL Share,CN=Content,CN=Domain System Volume,CN=DFSR-GlobalSettings,CN=System,DC=SerraMedicalClinic,DC=net # msDFSR-DirectoryFilter
 
         # SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\ set 'DisabledComponents' Dword dec 33, hex 21: prefer IPv4, disalbe tunnel-6.
 
@@ -183,7 +207,9 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
         #}
 
         ADGroup ESXAdmins
-        {
+        { # idea: overload Hyper-V Administrators...?
+            #BETTER IDEA: fSpecifyGUIDOnAdd heuristic is true in the dSHeuristics
+            # https://docs.microsoft.com/en-us/openspecs/windows_protocols/ms-adts/e5899be4-862e-496f-9a38-33950617d2c5
             GroupName  = 'ESX Admins'
             DisplayName = "ESXi Administrators"
             Description = "Members have administrative privileges on VMware ESXi hosts joined to this domain."
