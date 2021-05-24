@@ -37,7 +37,7 @@ for($i = 0; $i -lt 5; $i++) {
 Write-Output "S-1-5-80-$([String]::Join("-", $blocks))" 
 
 
-#####
+<#####
 
 
 $acl = get-acl "ad:CN={31B2F340-016D-11D2-945F-00C04FB984F9},CN=Policies,CN=System,DC=SerraMedicalClinic,DC=net"
