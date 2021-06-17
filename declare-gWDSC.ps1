@@ -101,7 +101,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
     #Node $AllNodes.NodeName
     { # Active Directory Domain Services, Domain Controller
         $DomainComponents = $Node.DNSName.Split(".")
-        $NodeDistinguishedName = "DC="+ ($DomainComponents -join ",DC=")
+        $NodeDistinguishedName = [X500DistinguishedName]("DC="+ ($DomainComponents -join ",DC="))
 
         User ASiUser
         {   #DomainName = $Node.DNSName
