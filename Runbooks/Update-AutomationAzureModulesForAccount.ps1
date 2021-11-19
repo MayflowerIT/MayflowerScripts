@@ -61,7 +61,7 @@ param(
 
     [int] $SimultaneousModuleImportJobCount = 10,
 
-    [string] $AzureModuleClass = 'AzureRM',
+    [string] $AzureModuleClass = 'Az',
 
     [string] $AzureEnvironment = 'AzureCloud',
 
