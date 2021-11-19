@@ -535,7 +535,7 @@ $NetDeployID = Get-AutomationVariable -Name "DEPLOYID"
 
             DependsOn = "[WaitForADDomain]$NodeName","[WindowsFeature]DNSt"
         }
-        xDnsServerADZone xARPA
+        xDnsServerADZone APRA
         {
             Name             = '.10.in-addr.arpa'
             DynamicUpdate    = 'Secure'
