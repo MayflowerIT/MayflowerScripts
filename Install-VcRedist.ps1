@@ -13,5 +13,5 @@ Update-Module VcRedist -Confirm:$false
 Import-Module VcRedist
 $vcTemp = "$ENV:TEMP\VcRedists"
 md $vcTemp -Force
-$VcList = Get-VcList | Get-VcRedist -Path $vcTemp
+$VcList = Get-VcList -Export All | Get-VcRedist -Path $vcTemp
 $VcList | Install-VcRedist -Path $vcTemp -Silent
